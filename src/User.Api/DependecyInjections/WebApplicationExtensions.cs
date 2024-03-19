@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning.ApiExplorer;
 using Ecoeden.Swagger;
+using User.Api.Middlewares;
 
 namespace User.Api.DependecyInjections
 {
@@ -18,6 +19,10 @@ namespace User.Api.DependecyInjections
             }
 
             app.UseHttpsRedirection();
+
+            app.UseMiddleware<RequestLoggerMiddleware>()
+                .UseMiddleware<CorrelationHeaderEnricher>()
+                .UseMiddleware<GlobalExceptionMiddleware>();
 
             app.UseAuthorization();
 
