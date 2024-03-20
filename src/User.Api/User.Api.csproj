@@ -21,10 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ConfigurationOptions\Identity\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Using Include="Serilog.ILogger">
       <Alias>ILogger</Alias>
     </Using>

@@ -1,6 +1,6 @@
-﻿using Ecoeden.User.Domain.Models.Core;
+﻿using Ecoeden.User.Application.Extensions;
+using Ecoeden.User.Domain.Models.Core;
 using Ecoeden.User.Domain.Models.Enums;
-using Ecoeden.User.Infrastructure.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;

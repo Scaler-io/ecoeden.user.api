@@ -1,4 +1,5 @@
 using Ecoeden.Swagger;
+using Ecoeden.User.Infrastructure.DI;
 using Serilog;
 using User.Api.DependecyInjections;
 
@@ -11,6 +12,7 @@ var swaggerConfiguration = new SwaggerConfiguration(apiName, apiDescription, api
 
 builder.Services
     .ConfiguredServices(builder.Configuration, swaggerConfiguration)
+    .ConfigureInfraServices()
     .ConfigureApplicationOptions(builder.Configuration);
 
 var app = builder.Build()

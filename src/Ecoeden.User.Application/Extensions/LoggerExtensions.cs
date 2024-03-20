@@ -2,7 +2,7 @@
 using Serilog;
 using System.Runtime.CompilerServices;
 
-namespace Ecoeden.User.Infrastructure.Extensions
+namespace Ecoeden.User.Application.Extensions
 {
     public static class LoggerExtensions
     {

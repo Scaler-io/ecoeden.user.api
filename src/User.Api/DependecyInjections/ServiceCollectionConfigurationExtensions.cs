@@ -1,6 +1,6 @@
-﻿using User.Api.ConfigurationOptions.App;
-using User.Api.ConfigurationOptions.Elastic;
+﻿using User.Api.ConfigurationOptions.Elastic;
 using User.Api.ConfigurationOptions.Logging;
+using User.Infrastructure.ConfigurationOptions.App;
 
 namespace User.Api.DependecyInjections
 {

@@ -3,8 +3,8 @@ using Serilog.Events;
 using Serilog;
 using User.Api.ConfigurationOptions.Elastic;
 using User.Api.ConfigurationOptions.Logging;
-using User.Api.ConfigurationOptions.App;
 using Destructurama;
+using User.Infrastructure.ConfigurationOptions.App;
 
 namespace User.Api
 {

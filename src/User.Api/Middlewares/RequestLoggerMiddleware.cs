@@ -1,4 +1,4 @@
-﻿using Ecoeden.User.Infrastructure.Extensions;
+﻿using Ecoeden.User.Application.Extensions;
 using Microsoft.AspNetCore.Http.Extensions;
 using Serilog.Context;
 using System.Diagnostics;
