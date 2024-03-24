@@ -39,7 +39,7 @@ namespace User.Api.Services
                 UserName = claims.Where(c => c.Type == UsernameClaim).FirstOrDefault().Value,
                 AuthorizationDto = new AuthorizationDto
                 {
-                    Roles = JsonConvert.DeserializeObject<List<Role>>(roleString),
+                    Roles = JsonConvert.DeserializeObject<List<string>>(roleString),
                     Permissions = JsonConvert.DeserializeObject<List<string>>(permissionsString),
                     Token = token
                 }

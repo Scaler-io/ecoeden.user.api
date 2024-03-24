@@ -24,8 +24,8 @@ namespace Ecoeden.User.Infrastructure.DI
 
             // health check service registrations
             services.AddScoped<IHealthCheck, BaseRepository<ApplicationUser>>();
-
             services.AddScoped<IHealthCheckConfiguration, HealthCheckConfiguration>();
+
             return services;
         }
     }

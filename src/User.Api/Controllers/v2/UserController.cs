@@ -1,11 +1,13 @@
 ﻿using Asp.Versioning;
 using Ecoeden.Swagger;
 using Ecoeden.User.Application.Extensions;
+using Ecoeden.User.Domain.Models.Enums;
 using Ecoeden.User.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
+using User.Api.Filters;
 using User.Api.Services;
 
 namespace User.Api.Controllers.v2
@@ -25,7 +27,7 @@ namespace User.Api.Controllers.v2
         [HttpGet("users")]
         [SwaggerHeader("CorrelationId", Description = "expects unique correlation id")]
         [SwaggerOperation(OperationId = "", Description = "")]
-        //[RequirePermission("UserRead")]
+        [RequirePermission(ApiAccess.UserRead)]
         public async Task<IActionResult> GetAllUsers()
         {
             Logger.Here().MethodEnterd();
