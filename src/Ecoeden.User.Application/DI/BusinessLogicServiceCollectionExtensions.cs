@@ -6,7 +6,7 @@ namespace Ecoeden.User.Application.DI
 {
     public static class BusinessLogicServiceCollectionExtensions
     {
-        public static IServiceCollection AddBusinessLogicServices(this IServiceCollection services)
+        public static IServiceCollection ConfigureBusinessLogicServices(this IServiceCollection services)
         {
             services.AddMediatR(Assembly.GetExecutingAssembly());
             return services;

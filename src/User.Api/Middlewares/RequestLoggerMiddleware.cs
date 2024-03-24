@@ -5,16 +5,18 @@ using System.Diagnostics;
 
 namespace User.Api.Middlewares
 {
-    public class RequestLoggerMiddleware : IMiddleware
+    public class RequestLoggerMiddleware
     {
         private readonly ILogger _logger;
+        private readonly RequestDelegate _next;
 
-        public RequestLoggerMiddleware(ILogger logger)
+        public RequestLoggerMiddleware(ILogger logger, RequestDelegate next)
         {
             _logger = logger;
+            _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context)
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -28,7 +30,7 @@ namespace User.Api.Middlewares
                 LogContext.PushProperty("HttpMethod", verb);
                 _logger.Here().Information("Http request starting");
 
-                await next(context);
+                await _next(context);
 
                 stopwatch.Stop();
                 _logger.Here().Debug("Elapsed time {elapsedTime}", stopwatch.Elapsed);

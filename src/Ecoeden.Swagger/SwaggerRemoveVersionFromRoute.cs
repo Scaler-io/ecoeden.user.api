@@ -10,7 +10,7 @@ namespace Ecoeden.Swagger
             var modifiedPaths = new OpenApiPaths();
             foreach(var path in swaggerDoc.Paths)
             {
-                string pathWithoutVersion = path.Key.Remove(0, 3);
+                string pathWithoutVersion = path.Key.Remove(0, 7);
                 if (string.IsNullOrEmpty(pathWithoutVersion))
                 {
                     pathWithoutVersion = "/";

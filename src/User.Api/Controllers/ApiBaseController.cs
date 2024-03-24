@@ -6,7 +6,7 @@ using User.Api.Extensions;
 
 namespace User.Api.Controllers
 {
-    [Route("api/v{version:apiVersion}/[controller]")]
+    [Route("api/v{version:apiVersion}")]
     [ApiController]
     public class ApiBaseController : ControllerBase
     {
@@ -33,8 +33,8 @@ namespace User.Api.Controllers
 
             return result.ErrorCode switch
             {
-                ErrorCodes.BadRequest => BadRequest(new ApiResponse(ErrorCodes.BadRequest, result.ErrorMessage)),
-                ErrorCodes.InternalServerError => InternalServerError(new ApiResponse(ErrorCodes.InternalServerError, result.ErrorMessage)),
+                ErrorCodes.BadRequest => BadRequest(new ApiValidationResponse(result.ErrorMessage)),
+                ErrorCodes.InternalServerError => InternalServerError(new ApiExceptionResponse(result.ErrorMessage)),
                 ErrorCodes.NotFound => NotFound(new ApiResponse(ErrorCodes.NotFound, result.ErrorMessage)),
                 ErrorCodes.Unauthorized => Unauthorized(new ApiResponse(ErrorCodes.Unauthorized, result.ErrorMessage)),
                 ErrorCodes.OperationFailed => BadRequest(new ApiResponse(ErrorCodes.OperationFailed, result.ErrorMessage)),

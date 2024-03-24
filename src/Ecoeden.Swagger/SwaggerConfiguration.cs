@@ -44,6 +44,7 @@ namespace Ecoeden.Swagger
             {
                 swagger.Servers.Clear(); // clears existing servers
                 swagger.Servers.Add(new OpenApiServer { Url = $"{scheme}://{_apiHost}" });
+                swagger.Servers.Add(new OpenApiServer { Url = $"https://{_apiHost}" });
             });
         }
 

@@ -9,22 +9,24 @@ using System.Net.Mime;
 
 namespace User.Api.Middlewares
 {
-    public class GlobalExceptionMiddleware : IMiddleware
+    public class GlobalExceptionMiddleware
     {
         private readonly ILogger _logger;
         private readonly IWebHostEnvironment _environment;
+        private readonly RequestDelegate _next;
 
-        public GlobalExceptionMiddleware(ILogger logger, IWebHostEnvironment environment)
+        public GlobalExceptionMiddleware(ILogger logger, IWebHostEnvironment environment, RequestDelegate next)
         {
             _logger = logger;
             _environment = environment;
+            _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context)
         {
             try
             {
-                await next(context);
+                await _next(context);
             }catch (Exception ex)
             {
                 await HandleGlobalException(context, ex);

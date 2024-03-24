@@ -20,7 +20,8 @@ namespace Ecoeden.Swagger
                     Name = header.Name,
                     In = ParameterLocation.Header,
                     Description = header.Description,
-                    Schema = new OpenApiSchema { Type = header.Type }
+                    Schema = new OpenApiSchema { Type = header.Type ?? "string" },
+                    Required = header.Required,
                 });
             }
         }

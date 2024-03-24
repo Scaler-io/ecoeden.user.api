@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Ecoeden.Swagger;
+using Ecoeden.Swagger.Examples.HealthCheck;
 using Ecoeden.User.Domain.Models.Core;
 using Ecoeden.User.Domain.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ namespace User.Api.DependecyInjections
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection ConfiguredServices(this IServiceCollection services,
+        public static IServiceCollection ConfigureServices(this IServiceCollection services,
             IConfiguration configuration,
             SwaggerConfiguration swaggerConfiguration)
         {
@@ -50,6 +51,7 @@ namespace User.Api.DependecyInjections
             });
 
             // swagger setup
+            services.AddSwaggerExamplesFromAssemblies(typeof(HealthCheckResponseExample).Assembly);
             services.AddSwaggerExamples();
             services.AddSwaggerGen(options =>
             {

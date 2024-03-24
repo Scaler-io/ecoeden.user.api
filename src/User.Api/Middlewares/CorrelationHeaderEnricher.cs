@@ -3,18 +3,25 @@ using User.Api.Extensions;
 
 namespace User.Api.Middlewares
 {
-    public class CorrelationHeaderEnricher : IMiddleware
+    public class CorrelationHeaderEnricher 
     {
+        private readonly RequestDelegate _next;
+
+        public CorrelationHeaderEnricher(RequestDelegate next)
+        {
+            _next = next;
+        }
+
         private const string CorrelationIdLogPropertyName = "CorrelationId";
 
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context)
         {
             var correlationId = GetOrGenerateCorrelationId(context);
             using (LogContext.PushProperty("ThreadId", Environment.CurrentManagedThreadId))
             {
                 LogContext.PushProperty(CorrelationIdLogPropertyName, correlationId);
-                context.Response.Headers.Add("CorrelationId", correlationId);
-                await next(context);
+                context.Request.Headers.Add("CorrelationId", correlationId);
+                await _next(context);
             }
         }
 

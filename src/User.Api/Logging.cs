@@ -15,7 +15,7 @@ namespace User.Api
             var loggingOptions = configuration.GetSection("Logging").Get<LoggingOption>();
             var appConfigurations = configuration.GetSection("AppConfigurations").Get<AppOption>();
             var elasticUri = configuration.GetSection("Elasticsearch").Get<ElasticSearchOption>();
-            var logIndexPattern = $"Ecoeden.Userservice-{environment.EnvironmentName}";
+            var logIndexPattern = $"Ecoeden.User.API-{environment.EnvironmentName}";
 
             Enum.TryParse(loggingOptions.Console.LogLevel, false, out LogEventLevel minimumEventLevel);
 

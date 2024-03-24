@@ -20,8 +20,8 @@ namespace User.Api.DependecyInjections
 
             app.UseHttpsRedirection();
 
-            app.UseMiddleware<RequestLoggerMiddleware>()
-                .UseMiddleware<CorrelationHeaderEnricher>()
+            app.UseMiddleware<CorrelationHeaderEnricher>()
+                .UseMiddleware<RequestLoggerMiddleware>()
                 .UseMiddleware<GlobalExceptionMiddleware>();
 
             app.UseAuthorization();

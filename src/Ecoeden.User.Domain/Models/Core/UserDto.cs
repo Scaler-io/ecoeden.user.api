@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace Ecoeden.User.Domain.Models.Core
+﻿namespace Ecoeden.User.Domain.Models.Core
 {
     public sealed class UserDto
     {

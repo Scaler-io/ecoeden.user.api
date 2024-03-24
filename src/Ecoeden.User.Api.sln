@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ecoeden.User.Domain", "Ecoe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ecoeden.User.Infrastructure", "Ecoeden.User.Infrastructure\Ecoeden.User.Infrastructure.csproj", "{95B298C1-780E-4018-B42B-FDCE674CABA9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ecoeden.Swagger", "Ecoeden.Swagger\Ecoeden.Swagger.csproj", "{D4D9138D-31BB-4F79-9E71-E1C15EA85CF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ecoeden.Swagger", "Ecoeden.Swagger\Ecoeden.Swagger.csproj", "{D4D9138D-31BB-4F79-9E71-E1C15EA85CF0}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{0876283B-C35A-4756-AC77-F8D5637A1B50}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{D4D9138D-31BB-4F79-9E71-E1C15EA85CF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4D9138D-31BB-4F79-9E71-E1C15EA85CF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4D9138D-31BB-4F79-9E71-E1C15EA85CF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0876283B-C35A-4756-AC77-F8D5637A1B50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0876283B-C35A-4756-AC77-F8D5637A1B50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0876283B-C35A-4756-AC77-F8D5637A1B50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0876283B-C35A-4756-AC77-F8D5637A1B50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -3,12 +3,12 @@
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class SwaggerHeaderAttribute : Attribute
     {
-        public SwaggerHeaderAttribute(string name, string type)
+        public SwaggerHeaderAttribute(string name, string description = "", string type = "", bool required = false)
         {
             Name = name;
             Type = type;
-            Description = string.Empty;
-            Required = false;
+            Description = description;
+            Required = required;
         }
 
         public string Name { get; set; }
