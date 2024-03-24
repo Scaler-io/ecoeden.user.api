@@ -4,10 +4,14 @@ using Ecoeden.Swagger;
 using Ecoeden.Swagger.Examples.HealthCheck;
 using Ecoeden.User.Domain.Models.Core;
 using Ecoeden.User.Domain.Models.Enums;
+using Ecoeden.User.Infrastructure.ConfigurationOptions.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Filters;
+using User.Api.Services;
 
 namespace User.Api.DependecyInjections
 {
@@ -58,6 +62,28 @@ namespace User.Api.DependecyInjections
                 var provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
                 swaggerConfiguration.SetupSwaggerGenService(options, provider);
             });
+
+            // configure identity
+            var identityGroupAccess = configuration
+                .GetSection("IdentityGroupAccess")
+                .Get<IdentityGroupAccessOptions>();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.Audience = identityGroupAccess.Audience;
+                options.Authority = identityGroupAccess.Authority;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = true,
+                    ValidateIssuer = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+
+            services.AddHttpContextAccessor();
+            services.AddScoped<IIdentityService, IdentityService>();
 
             return services;
         }

@@ -3,6 +3,7 @@ using Ecoeden.User.Domain.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using User.Api.Extensions;
+using User.Api.Services;
 
 namespace User.Api.Controllers
 {
@@ -10,17 +11,21 @@ namespace User.Api.Controllers
     [ApiController]
     public class ApiBaseController : ControllerBase
     {
-        protected ILogger Logger { get; set; }
+        protected ILogger Logger;
+        protected readonly IIdentityService IdentityService;
 
-        public ApiBaseController(ILogger logger)
+        public ApiBaseController(ILogger logger, IIdentityService identityService)
         {
             Logger = logger;
+            IdentityService = identityService;
         }
 
+        protected UserDto CurrentUser => IdentityService.PrepareUser();
 
         protected RequestInformation RequestInformation => new RequestInformation
         {
-            CorrelationId = GetOrGenerateCorelationId()
+            CorrelationId = GetOrGenerateCorelationId(),
+            CurrentUser = CurrentUser
         };
 
         protected string GetOrGenerateCorelationId() => Request?.GetRequestHeaderOrdefault("CorrelationId", $"GEN-{Guid.NewGuid().ToString()}");

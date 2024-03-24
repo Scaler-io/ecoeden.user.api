@@ -20,10 +20,6 @@ namespace Ecoeden.User.Infrastructure.DI
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
             });
 
-            services.AddIdentity<ApplicationUser, ApplicationRole>()
-                .AddEntityFrameworkStores<UserDbContext>()
-                .AddDefaultTokenProviders();
-
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 
             // health check service registrations

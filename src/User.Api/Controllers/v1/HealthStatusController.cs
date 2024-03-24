@@ -6,12 +6,11 @@ using Ecoeden.User.Application.Features.HealthCheck.Queries.GetHealthCheckStatus
 using Ecoeden.User.Domain.Models.Core;
 using Ecoeden.User.Domain.Models.Responses.HealthCheck;
 using MediatR;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Filters;
 using System.Net;
+using User.Api.Services;
 
 namespace User.Api.Controllers.v1
 {
@@ -20,8 +19,8 @@ namespace User.Api.Controllers.v1
     {
         private readonly IMediator _mediator;
 
-        public HealthStatusController(ILogger logger, IMediator mediator)
-            : base(logger)
+        public HealthStatusController(ILogger logger, IIdentityService identityService, IMediator mediator)
+            : base(logger, identityService)
         {
             _mediator = mediator;
         }

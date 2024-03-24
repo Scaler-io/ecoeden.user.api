@@ -24,6 +24,8 @@ namespace User.Api.DependecyInjections
                 .UseMiddleware<RequestLoggerMiddleware>()
                 .UseMiddleware<GlobalExceptionMiddleware>();
 
+            app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.MapControllers();
