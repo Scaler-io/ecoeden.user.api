@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using Ecoeden.User.Application.Contracts.Cache;
 using Ecoeden.User.Application.Contracts.Factory;
-using Ecoeden.User.Application.Contracts.Persistence.Users;
 using Ecoeden.User.Application.Extensions;
+using Ecoeden.User.Domain.Entities;
 using Ecoeden.User.Domain.Models.Core;
 using Ecoeden.User.Domain.Models.Enums;
 using Ecoeden.User.Domain.Models.Responses.Users;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ecoeden.User.Application.Features.User.Queries.GetUserById
 {
@@ -15,17 +17,17 @@ namespace Ecoeden.User.Application.Features.User.Queries.GetUserById
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
         private readonly ICacheService _cacheService;
-        private readonly IUserRepository _userRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public GetUserByIdQueryHandler(ILogger logger,
             IMapper mapper,
             ICacheServiceFactory cacheServiceFactory,
-            IUserRepository userRepository)
+            UserManager<ApplicationUser> userManager)
         {
             _logger = logger;
             _mapper = mapper;
             _cacheService = cacheServiceFactory.GetService(CahceServiceTypes.InMemory);
-            _userRepository = userRepository;
+            _userManager = userManager;
         }
 
         public async Task<Result<UserResponse>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
@@ -42,14 +44,18 @@ namespace Ecoeden.User.Application.Features.User.Queries.GetUserById
 
             // ofcourse, we cant ignoe a terrible cache miss 
             _logger.Here().Information("cache miss - {@key}", cacheKey);
-            var result = await _userRepository.GetUserById(request.Id);
-            if (!result.IsSuccess)
+
+            var result = await _userManager.Users
+                .Include("UserRoles.Role.RolePermissions.Permission")
+                .FirstOrDefaultAsync(u => u.Id == request.Id);
+
+            if (result is null)
             {
                 _logger.Here().Error("{@errorcode} - No user was found with {@id}", ErrorCodes.NotFound, request.Id);
                 return Result<UserResponse>.Failure(ErrorCodes.NotFound);
             }
 
-            var userResponse = _mapper.Map<UserResponse>(result.Value);
+            var userResponse = _mapper.Map<UserResponse>(result);
             _cacheService.Set(cacheKey, userResponse, null);
 
             _logger.Here().Information("user found with id {id}", request.Id);

@@ -1,15 +1,12 @@
 ﻿using Ecoeden.User.Application.Contracts.Cache;
 using Ecoeden.User.Application.Contracts.Factory;
 using Ecoeden.User.Application.Contracts.HealthStatus;
-using Ecoeden.User.Application.Contracts.Persistence;
-using Ecoeden.User.Application.Contracts.Persistence.Users;
 using Ecoeden.User.Domain.Entities;
 using Ecoeden.User.Infrastructure.Cache;
 using Ecoeden.User.Infrastructure.Factory;
 using Ecoeden.User.Infrastructure.HealthStatus;
+using Ecoeden.User.Infrastructure.HealthStatus.DbHealthStatus;
 using Ecoeden.User.Infrastructure.Persistence;
-using Ecoeden.User.Infrastructure.Repositories;
-using Ecoeden.User.Infrastructure.Repositories.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -26,11 +23,12 @@ namespace Ecoeden.User.Infrastructure.DI
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
             });
 
-            services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
-            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
+                .AddEntityFrameworkStores<UserDbContext>()
+                .AddDefaultTokenProviders();
 
             // health check service registrations
-            services.AddScoped<IHealthCheck, BaseRepository<ApplicationUser>>();
+            services.AddScoped<IHealthCheck, DbHealthCheck>();
             services.AddScoped<IHealthCheckConfiguration, HealthCheckConfiguration>();
 
             // cache implementations
