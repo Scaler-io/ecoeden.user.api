@@ -6,5 +6,6 @@
         public string ApplicationIdentifier { get; set; }
         public string ApplicationEnvironment { get; set; }
         public int HealthCheckTimeOutInSeconds { get; set; }
+        public int CacheExpiration { get; set; }
     }
 }

@@ -35,7 +35,7 @@ namespace User.Api.Middlewares
                 stopwatch.Stop();
                 _logger.Here().Debug("Elapsed time {elapsedTime}", stopwatch.Elapsed);
                 _logger.Here()
-                        .Information("Http request completed. Response code {@code} - {@body}", context.Response.StatusCode, context.Response.Body);
+                        .Information("Http request completed. Response code {@code}", context.Response.StatusCode);
             }
         }
     }
