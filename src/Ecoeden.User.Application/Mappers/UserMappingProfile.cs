@@ -3,6 +3,7 @@ using Ecoeden.User.Application.Extensions;
 using Ecoeden.User.Application.Helpers;
 using Ecoeden.User.Domain.Entities;
 using Ecoeden.User.Domain.Models.Core;
+using Ecoeden.User.Domain.Models.Requests;
 using Ecoeden.User.Domain.Models.Responses.Users;
 
 namespace Ecoeden.User.Application.Mappers
@@ -21,7 +22,8 @@ namespace Ecoeden.User.Application.Mappers
                     CreatedBy = d.CreatedBy,
                     UpdtedBy = d.UpdateBy
                 }));
-                
+
+            CreateMap<CreateUserRequest, ApplicationUser>();
         }
     }
 }

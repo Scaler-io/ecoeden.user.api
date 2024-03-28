@@ -1,13 +1,22 @@
 ﻿using Asp.Versioning;
 using Ecoeden.Swagger;
+using Ecoeden.Swagger.Examples;
+using Ecoeden.Swagger.Examples.User;
 using Ecoeden.User.Application.Extensions;
+using Ecoeden.User.Application.Features.User.Commands.AddUser;
 using Ecoeden.User.Application.Features.User.Queries.GetAllUsers;
 using Ecoeden.User.Application.Features.User.Queries.GetUserById;
+using Ecoeden.User.Domain.Models.Core;
 using Ecoeden.User.Domain.Models.Enums;
+using Ecoeden.User.Domain.Models.Requests;
+using Ecoeden.User.Domain.Models.Responses.Users;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using Swashbuckle.AspNetCore.Filters;
+using System.Net;
 using User.Api.Filters;
 using User.Api.Services;
 
@@ -18,15 +27,30 @@ namespace User.Api.Controllers.v2
     public class UserController : ApiBaseController
     {
         private readonly IMediator _mediator;
-        public UserController(ILogger logger, IIdentityService identityService, IMediator mediator) :
+        private readonly IValidator<CreateUserRequest> _createSchemaValidator;
+
+        public UserController(ILogger logger, 
+            IIdentityService identityService, 
+            IMediator mediator, 
+            IValidator<CreateUserRequest> createSchemaValidator) :
             base(logger, identityService)
         {
             _mediator = mediator;
+            _createSchemaValidator = createSchemaValidator;
         }
 
         [HttpGet("users")]
         [SwaggerHeader("CorrelationId", Description = "expects unique correlation id")]
         [SwaggerOperation(OperationId = "GetAllUser", Description = "Fetches all user list")]
+        // 200
+        [ProducesResponseType(typeof(List<UserResponse>), (int)HttpStatusCode.OK)]
+        [SwaggerResponseExample((int)HttpStatusCode.OK, typeof(GetAllUsersExample))]
+        // 404
+        [ProducesResponseType(typeof(ApiResponse), (int)HttpStatusCode.NotFound)]
+        [SwaggerResponseExample((int)HttpStatusCode.NotFound, typeof(NotFoundResponseExample))]
+        // 500
+        [ProducesResponseType(typeof(ApiExceptionResponse), (int)HttpStatusCode.InternalServerError)]
+        [SwaggerResponseExample((int)HttpStatusCode.InternalServerError, typeof(InternalServerResponseExample))]
         [RequirePermission(ApiAccess.UserRead)]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -40,6 +64,15 @@ namespace User.Api.Controllers.v2
         [HttpGet("user/{id}")]
         [SwaggerHeader("CorrelationId", Description = "expects unique correlation id")]
         [SwaggerOperation(OperationId = "GetUserById", Description = "Fetches user details by id")]
+        // 200
+        [ProducesResponseType(typeof(UserResponse), (int)HttpStatusCode.OK)]
+        [SwaggerResponseExample((int)HttpStatusCode.OK, typeof(GetUserByIdExample))]
+        // 404
+        [ProducesResponseType(typeof(ApiResponse), (int)HttpStatusCode.NotFound)]
+        [SwaggerResponseExample((int)HttpStatusCode.NotFound, typeof(NotFoundResponseExample))]
+        // 500
+        [ProducesResponseType(typeof(ApiExceptionResponse), (int)HttpStatusCode.InternalServerError)]
+        [SwaggerResponseExample((int)HttpStatusCode.InternalServerError, typeof(InternalServerResponseExample))]
         [RequirePermission(ApiAccess.UserRead)]
         public async Task<IActionResult> GetUserById([FromRoute] string id)
         {
@@ -49,5 +82,25 @@ namespace User.Api.Controllers.v2
             Logger.Here().MethodExited();
             return OkOrFailure(result);
         }
+
+        [HttpPost("user")]
+        [SwaggerHeader("CorrelationId", Description = "expects unique correlation id")]
+        [SwaggerOperation(OperationId = "CreateUser", Description = "Creates new user record")]
+        [RequirePermission(ApiAccess.UserWrite)]
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request)
+        {
+            Logger.Here().MethodEnterd();
+            var validationResult = _createSchemaValidator.Validate(request);
+            if (!validationResult.IsValid)
+            {
+                return ProcessValidationResult(validationResult);
+            }
+
+            var command = new AddUserCommand(request);
+            var result = await _mediator.Send(command);
+            Logger.Here().MethodExited();
+            return OkOrFailure(result);
+        }
+
     }
 }
