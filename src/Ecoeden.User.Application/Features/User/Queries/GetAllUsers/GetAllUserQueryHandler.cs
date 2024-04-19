@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Ecoeden.User.Application.Behaviors;
 using Ecoeden.User.Application.Contracts.Cache;
 using Ecoeden.User.Application.Contracts.Data.Repositories;
 using Ecoeden.User.Application.Contracts.Factory;

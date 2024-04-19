@@ -1,5 +1,4 @@
-﻿using Ecoeden.User.Application.Contracts.Data;
-using Ecoeden.User.Application.Contracts.Data.Repositories;
+﻿using Ecoeden.User.Application.Contracts.Data.Repositories;
 using Ecoeden.User.Application.Extensions;
 using Ecoeden.User.Domain.Entities;
 using Ecoeden.User.Domain.Models.Core;
@@ -12,14 +11,11 @@ namespace Ecoeden.User.Application.Features.Role.Commands.UpdateRole
     {
         private readonly ILogger _logger;
         private readonly IUserRepository _userRepository;
-        private readonly IDbTranscation _dbTransaction;
 
         public UpdateRoleCommandHandler(ILogger logger,
-            IDbTranscation dbTransaction,
             IUserRepository userRepository)
         {
             _logger = logger;
-            _dbTransaction = dbTransaction;
             _userRepository = userRepository;
         }
 
@@ -42,8 +38,6 @@ namespace Ecoeden.User.Application.Features.Role.Commands.UpdateRole
                 return Result<bool>.Failure(ErrorCodes.NotFound, "User not found");
             }
 
-            _dbTransaction.BeginTransaction();
-
             foreach (var role in roles)
             {
                 if(await _userRepository.IsInRole(user, role))
@@ -58,8 +52,6 @@ namespace Ecoeden.User.Application.Features.Role.Commands.UpdateRole
             user.setUpdationTime();
 
             await _userRepository.UpdateUser(user);
-
-            _dbTransaction.CommitTransaction();
 
             _logger.Here().Information("User assigned to role {roles}", string.Join(',', roles));
             _logger.Here().MethodExited();

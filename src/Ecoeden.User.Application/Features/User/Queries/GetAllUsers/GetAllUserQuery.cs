@@ -1,10 +1,11 @@
-﻿using Ecoeden.User.Domain.Models.Core;
+﻿using Ecoeden.User.Application.Behaviors;
+using Ecoeden.User.Domain.Models.Core;
 using Ecoeden.User.Domain.Models.Responses.Users;
 using MediatR;
 
 namespace Ecoeden.User.Application.Features.User.Queries.GetAllUsers
 {
-    public sealed class GetAllUserQuery : IRequest<Result<IReadOnlyList<UserResponse>>>
+    public sealed class GetAllUserQuery : IRequest<Result<IReadOnlyList<UserResponse>>>, ISkipPiplineBehavior
     {
     }
 }

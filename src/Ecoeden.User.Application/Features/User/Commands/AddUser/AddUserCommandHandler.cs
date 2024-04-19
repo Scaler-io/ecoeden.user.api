@@ -14,17 +14,14 @@ namespace Ecoeden.User.Application.Features.User.Commands.AddUser
 
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
-        private readonly IDbTranscation _dbTransaction;
         private readonly IUserRepository _userRepository;
 
         public AddUserCommandHandler(ILogger logger,
             IMapper mapper,
-            IDbTranscation dbTransaction,
             IUserRepository userRepository)
         {
             _logger = logger;
             _mapper = mapper;
-            _dbTransaction = dbTransaction;
             _userRepository = userRepository;
         }
 
@@ -49,8 +46,6 @@ namespace Ecoeden.User.Application.Features.User.Commands.AddUser
 
             var roles = request.CreateUser.Roles;
 
-            _dbTransaction.BeginTransaction();
-
             var isUserCreated = await _userRepository.CreateUserAsync(createUserEntity, request.CreateUser.Password);
             if (!isUserCreated)
             {
@@ -64,8 +59,6 @@ namespace Ecoeden.User.Application.Features.User.Commands.AddUser
                 _logger.Here().Error("Failed to assign roles to {@username}", request.CreateUser.UserName);
                 return Result<bool>.Failure(ErrorCodes.OperationFailed);
             }
-
-            _dbTransaction.CommitTransaction();
 
             _logger.Here().Information("user {@username} created", request.CreateUser.UserName);
             _logger.Here().MethodExited();

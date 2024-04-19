@@ -1,5 +1,4 @@
-﻿using Ecoeden.User.Application.Contracts.Data;
-using Ecoeden.User.Application.Contracts.Data.Repositories;
+﻿using Ecoeden.User.Application.Contracts.Data.Repositories;
 using Ecoeden.User.Application.Extensions;
 using Ecoeden.User.Domain.Entities;
 using Ecoeden.User.Domain.Models.Core;
@@ -11,15 +10,12 @@ namespace Ecoeden.User.Application.Features.Role.Commands.RemoveRole
     public sealed class RemoveRoleCommandHandler : IRequestHandler<RemoveRoleCommand, Result<bool>>
     {
         private readonly ILogger _logger;
-        private readonly IDbTranscation _dbTransaction;
         private readonly IUserRepository _userRepository;
 
         public RemoveRoleCommandHandler(ILogger logger,
-            IDbTranscation dbTransaction,
             IUserRepository userRepository)
         {
             _logger = logger;
-            _dbTransaction = dbTransaction;
             _userRepository = userRepository;
         }
 
@@ -35,7 +31,7 @@ namespace Ecoeden.User.Application.Features.Role.Commands.RemoveRole
 
             var user = await _userRepository.GetUserById(request.Command.UserId);
 
-            if(!request.CurrentUser.IsAdmin() || user.CreatedBy != request.CurrentUser.Id)
+            if(!request.CurrentUser.IsAdmin() && user.CreatedBy != request.CurrentUser.Id)
             {
                 _logger.Here().Error("{ErroCode} - user is not authorized");
                 return Result<bool>.Failure(ErrorCodes.Unauthorized);
@@ -59,8 +55,6 @@ namespace Ecoeden.User.Application.Features.Role.Commands.RemoveRole
                 return Result<bool>.Failure(ErrorCodes.NotAllowed);
             }
 
-            _dbTransaction.BeginTransaction();
-
             var roles = request.Command.Roles;
             int roleRemoveCounter = 0;
             foreach(var role in roles)
@@ -74,8 +68,6 @@ namespace Ecoeden.User.Application.Features.Role.Commands.RemoveRole
             user.setUpdationTime();
 
             await _userRepository.UpdateUser(user);
-
-            _dbTransaction.CommitTransaction();
 
             _logger.Here().Information("{count} - roles removed successfully", roleRemoveCounter);
             _logger.Here().MethodExited();
