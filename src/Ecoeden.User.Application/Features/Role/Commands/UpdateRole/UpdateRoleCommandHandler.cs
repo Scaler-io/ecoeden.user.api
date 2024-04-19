@@ -1,26 +1,26 @@
 ﻿using Ecoeden.User.Application.Contracts.Data;
+using Ecoeden.User.Application.Contracts.Data.Repositories;
 using Ecoeden.User.Application.Extensions;
 using Ecoeden.User.Domain.Entities;
 using Ecoeden.User.Domain.Models.Core;
 using Ecoeden.User.Domain.Models.Enums;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 
 namespace Ecoeden.User.Application.Features.Role.Commands.UpdateRole
 {
     public sealed class UpdateRoleCommandHandler : IRequestHandler<UpdateRoleCommand, Result<bool>>
     {
         private readonly ILogger _logger;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserRepository _userRepository;
         private readonly IDbTranscation _dbTransaction;
 
-        public UpdateRoleCommandHandler(ILogger logger, 
-            UserManager<ApplicationUser> userManager, 
-            IDbTranscation dbTransaction)
+        public UpdateRoleCommandHandler(ILogger logger,
+            IDbTranscation dbTransaction,
+            IUserRepository userRepository)
         {
             _logger = logger;
-            _userManager = userManager;
             _dbTransaction = dbTransaction;
+            _userRepository = userRepository;
         }
 
         public async Task<Result<bool>> Handle(UpdateRoleCommand request, CancellationToken cancellationToken)
@@ -34,7 +34,7 @@ namespace Ecoeden.User.Application.Features.Role.Commands.UpdateRole
             }
             
             IEnumerable<string> roles = request.Command.Roles;
-            ApplicationUser user = await _userManager.FindByIdAsync(request.Command.UserId);
+            ApplicationUser user = await _userRepository.GetUserById(request.Command.UserId);
 
             if(user is null)
             {
@@ -46,13 +46,18 @@ namespace Ecoeden.User.Application.Features.Role.Commands.UpdateRole
 
             foreach (var role in roles)
             {
-                if(await IsInRole(user, role))
+                if(await _userRepository.IsInRole(user, role))
                 {
                     _logger.Here().Information("User has already assigned the role {roleName}", role);
                     continue;
                 }
-                await _userManager.AddToRoleAsync(user, role);
+                await _userRepository.AddToRoleAsync(user, role);
             }
+
+            user.SetUpdatedBy(request.CurrentUser.Id);
+            user.setUpdationTime();
+
+            await _userRepository.UpdateUser(user);
 
             _dbTransaction.CommitTransaction();
 
@@ -61,9 +66,6 @@ namespace Ecoeden.User.Application.Features.Role.Commands.UpdateRole
             return Result<bool>.Success(true);
         }
 
-        private async Task<bool> IsInRole(ApplicationUser user, string role) => await _userManager.IsInRoleAsync(user, role);
-
-        private static bool IsUpdatingOwnRole(UserDto user, string userId) => userId == user.Id;
-
+        private static bool IsUpdatingOwnRole(UserDto user, string userId) => userId == user.Id;  
     }
 }

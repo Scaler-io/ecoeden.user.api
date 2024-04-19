@@ -45,7 +45,7 @@ namespace User.Api.Controllers.v2
         [SwaggerHeader("CorrelationId", Description = "expects unique correlation id")]
         [SwaggerOperation(OperationId = "UpdateUserRole", Description = "Updates user role")]
         // 200
-        [ProducesResponseType(typeof(List<UserResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [SwaggerResponseExample((int)HttpStatusCode.OK, typeof(bool))]
         // 404
         [ProducesResponseType(typeof(ApiResponse), (int)HttpStatusCode.NotFound)]
@@ -73,7 +73,7 @@ namespace User.Api.Controllers.v2
         [SwaggerHeader("CorrelationId", Description = "expects unique correlation id")]
         [SwaggerOperation(OperationId = "RemoveUserRole", Description = "Removes user role")]
         // 200
-        [ProducesResponseType(typeof(List<UserResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [SwaggerResponseExample((int)HttpStatusCode.OK, typeof(bool))]
         //
         [ProducesResponseType(typeof(ApiResponse), (int)HttpStatusCode.BadRequest)]

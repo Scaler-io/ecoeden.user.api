@@ -1,27 +1,26 @@
 ﻿using Ecoeden.User.Application.Contracts.Data;
+using Ecoeden.User.Application.Contracts.Data.Repositories;
 using Ecoeden.User.Application.Extensions;
 using Ecoeden.User.Domain.Entities;
 using Ecoeden.User.Domain.Models.Core;
 using Ecoeden.User.Domain.Models.Enums;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Ecoeden.User.Application.Features.Role.Commands.RemoveRole
 {
     public sealed class RemoveRoleCommandHandler : IRequestHandler<RemoveRoleCommand, Result<bool>>
     {
         private readonly ILogger _logger;
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IDbTranscation _dbTransaction;
+        private readonly IUserRepository _userRepository;
 
-        public RemoveRoleCommandHandler(ILogger logger, 
-            UserManager<ApplicationUser> userManager, 
-            IDbTranscation dbTransaction)
+        public RemoveRoleCommandHandler(ILogger logger,
+            IDbTranscation dbTransaction,
+            IUserRepository userRepository)
         {
             _logger = logger;
-            _userManager = userManager;
             _dbTransaction = dbTransaction;
+            _userRepository = userRepository;
         }
 
         public async Task<Result<bool>> Handle(RemoveRoleCommand request, CancellationToken cancellationToken)
@@ -34,9 +33,13 @@ namespace Ecoeden.User.Application.Features.Role.Commands.RemoveRole
                 return Result<bool>.Failure(ErrorCodes.OperationFailed);
             }
 
-            var user = await _userManager.Users
-                .Include(u => u.UserRoles)
-                .FirstOrDefaultAsync(x => x.Id == request.Command.UserId);
+            var user = await _userRepository.GetUserById(request.Command.UserId);
+
+            if(!request.CurrentUser.IsAdmin() || user.CreatedBy != request.CurrentUser.Id)
+            {
+                _logger.Here().Error("{ErroCode} - user is not authorized");
+                return Result<bool>.Failure(ErrorCodes.Unauthorized);
+            }
 
             if(user is null)
             {
@@ -63,9 +66,14 @@ namespace Ecoeden.User.Application.Features.Role.Commands.RemoveRole
             foreach(var role in roles)
             {
                 if (user.GetUserRolesCount() == 1) break;
-                await _userManager.RemoveFromRoleAsync(user, role);
+                await _userRepository.RemoveFromRoleAsync(user, role);
                 roleRemoveCounter++;
             }
+
+            user.SetUpdatedBy(request.CurrentUser.Id);
+            user.setUpdationTime();
+
+            await _userRepository.UpdateUser(user);
 
             _dbTransaction.CommitTransaction();
 
@@ -76,6 +84,6 @@ namespace Ecoeden.User.Application.Features.Role.Commands.RemoveRole
 
         private static bool IsUpdatingOwnRole(UserDto user, string userId) => user.Id == userId;
 
-        private async Task<bool> IsTragetUserAdmin(ApplicationUser user) => await _userManager.IsInRoleAsync(user, Roles.Admin.ToString());
+        private async Task<bool> IsTragetUserAdmin(ApplicationUser user) => await _userRepository.IsInRole(user, Roles.Admin.ToString());
     }
 }

@@ -5,11 +5,11 @@ using Swashbuckle.AspNetCore.Filters;
 
 namespace Ecoeden.Swagger.Examples
 {
-    public sealed class BadRequestResponseExample : IExamplesProvider<ApiExceptionResponse>
+    public sealed class BadRequestResponseExample : IExamplesProvider<ApiResponse>
     {
-        public ApiExceptionResponse GetExamples()
+        public ApiResponse GetExamples()
         {
-            return new ApiExceptionResponse()
+            return new ApiResponse(ErrorCodes.BadRequest)
             {
                 ErrorMessage = ErrorMessages.BadRequest
             };

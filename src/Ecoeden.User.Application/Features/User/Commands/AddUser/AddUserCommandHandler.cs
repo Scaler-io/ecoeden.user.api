@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using Ecoeden.User.Application.Contracts.Data;
+using Ecoeden.User.Application.Contracts.Data.Repositories;
 using Ecoeden.User.Application.Extensions;
 using Ecoeden.User.Domain.Entities;
 using Ecoeden.User.Domain.Models.Core;
 using Ecoeden.User.Domain.Models.Enums;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 
 namespace Ecoeden.User.Application.Features.User.Commands.AddUser
 {
@@ -15,30 +15,30 @@ namespace Ecoeden.User.Application.Features.User.Commands.AddUser
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
         private readonly IDbTranscation _dbTransaction;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserRepository _userRepository;
 
         public AddUserCommandHandler(ILogger logger,
-            UserManager<ApplicationUser> userManager,
             IMapper mapper,
-            IDbTranscation dbTransaction)
+            IDbTranscation dbTransaction,
+            IUserRepository userRepository)
         {
             _logger = logger;
-            _userManager = userManager;
             _mapper = mapper;
             _dbTransaction = dbTransaction;
+            _userRepository = userRepository;
         }
 
         public async Task<Result<bool>> Handle(AddUserCommand request, CancellationToken cancellationToken)
         {
             _logger.Here().MethodEnterd();
 
-            if(await UserNameExists(request.CreateUser.UserName))
+            if(await _userRepository.UserNameExistsAsync(request.CreateUser.UserName))
             {
                 _logger.Here().Error("Username {username} already used");
                 return Result<bool>.Failure(ErrorCodes.BadRequest, "Username already used");
             }
 
-            if (await EmailExists(request.CreateUser.Email))
+            if (await _userRepository.EmailExistsAsync(request.CreateUser.Email))
             {
                 _logger.Here().Error("Email {email} already used");
                 return Result<bool>.Failure(ErrorCodes.BadRequest, "Email already used");
@@ -51,15 +51,15 @@ namespace Ecoeden.User.Application.Features.User.Commands.AddUser
 
             _dbTransaction.BeginTransaction();
 
-            var createResult = await _userManager.CreateAsync(createUserEntity, request.CreateUser.Password);
-            if (!createResult.Succeeded)
+            var isUserCreated = await _userRepository.CreateUserAsync(createUserEntity, request.CreateUser.Password);
+            if (!isUserCreated)
             {
                 _logger.Here().Error("Failed to create new user {@username}", request.CreateUser.UserName);
                 return Result<bool>.Failure(ErrorCodes.OperationFailed);
             }
 
-            var roleAssignmentResult = await _userManager.AddToRolesAsync(createUserEntity, roles);
-            if (!roleAssignmentResult.Succeeded)
+            var isRoleAssigned = await _userRepository.AddToRolesAsync(createUserEntity, roles);
+            if (!isRoleAssigned)
             {
                 _logger.Here().Error("Failed to assign roles to {@username}", request.CreateUser.UserName);
                 return Result<bool>.Failure(ErrorCodes.OperationFailed);
@@ -72,9 +72,5 @@ namespace Ecoeden.User.Application.Features.User.Commands.AddUser
           
             return Result<bool>.Success(true);
         }
-
-        private async Task<bool> UserNameExists(string username) => await _userManager.FindByNameAsync(username) is not null;
-
-        private async Task<bool> EmailExists(string email) => await _userManager.FindByEmailAsync(email) is not null;
     }
 }

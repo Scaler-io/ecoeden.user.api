@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Ecoeden.User.Application.Contracts.Cache;
+using Ecoeden.User.Application.Contracts.Data.Repositories;
 using Ecoeden.User.Application.Contracts.Factory;
 using Ecoeden.User.Application.Extensions;
 using Ecoeden.User.Domain.Entities;
@@ -8,7 +9,6 @@ using Ecoeden.User.Domain.Models.Enums;
 using Ecoeden.User.Domain.Models.Responses.Users;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Ecoeden.User.Application.Features.User.Queries.GetAllUsers
 {
@@ -17,6 +17,7 @@ namespace Ecoeden.User.Application.Features.User.Queries.GetAllUsers
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
         private readonly ICacheService _cacheService;
+        private readonly IUserRepository _userRepository;
         private readonly UserManager<ApplicationUser> _userManager;
 
         private const string CACHE_KEY = "userlist";
@@ -24,12 +25,12 @@ namespace Ecoeden.User.Application.Features.User.Queries.GetAllUsers
         public GetAllUserQueryHandler(ILogger logger,
             IMapper mapper,
             ICacheServiceFactory cacheServiceFactory,
-            UserManager<ApplicationUser> userManager)
+            IUserRepository userRepository)
         {
             _logger = logger;
             _mapper = mapper;
             _cacheService = cacheServiceFactory.GetService(CahceServiceTypes.InMemory);
-            _userManager = userManager;
+            _userRepository = userRepository;
         }
 
         public async Task<Result<IReadOnlyList<UserResponse>>> Handle(GetAllUserQuery request, CancellationToken cancellationToken)
@@ -44,7 +45,7 @@ namespace Ecoeden.User.Application.Features.User.Queries.GetAllUsers
 
             // ofcourse, we cant ignoe a terrible cache miss 
             _logger.Here().Information("cache miss - {@key}", CACHE_KEY);
-            var result = await _userManager.Users.Include("UserRoles.Role.RolePermissions.Permission").ToListAsync();
+            var result = await _userRepository.GetAllUsers();
             if (!result.Any())
             {
                 _logger.Here().Error("{@errorcode} - Unable to fetch user list", ErrorCodes.OperationFailed);

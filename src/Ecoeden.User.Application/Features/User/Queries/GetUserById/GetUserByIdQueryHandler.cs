@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Ecoeden.User.Application.Contracts.Cache;
+using Ecoeden.User.Application.Contracts.Data.Repositories;
 using Ecoeden.User.Application.Contracts.Factory;
 using Ecoeden.User.Application.Extensions;
 using Ecoeden.User.Domain.Entities;
@@ -8,7 +9,6 @@ using Ecoeden.User.Domain.Models.Enums;
 using Ecoeden.User.Domain.Models.Responses.Users;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Ecoeden.User.Application.Features.User.Queries.GetUserById
 {
@@ -17,17 +17,18 @@ namespace Ecoeden.User.Application.Features.User.Queries.GetUserById
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
         private readonly ICacheService _cacheService;
+        private readonly IUserRepository _userRepository;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public GetUserByIdQueryHandler(ILogger logger,
             IMapper mapper,
             ICacheServiceFactory cacheServiceFactory,
-            UserManager<ApplicationUser> userManager)
+            IUserRepository userRepository)
         {
             _logger = logger;
             _mapper = mapper;
             _cacheService = cacheServiceFactory.GetService(CahceServiceTypes.InMemory);
-            _userManager = userManager;
+            _userRepository = userRepository;
         }
 
         public async Task<Result<UserResponse>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
@@ -45,9 +46,7 @@ namespace Ecoeden.User.Application.Features.User.Queries.GetUserById
             // ofcourse, we cant ignoe a terrible cache miss 
             _logger.Here().Information("cache miss - {@key}", cacheKey);
 
-            var result = await _userManager.Users
-                .Include("UserRoles.Role.RolePermissions.Permission")
-                .FirstOrDefaultAsync(u => u.Id == request.Id);
+            var result = await _userRepository.GetUserById(request.Id);
 
             if (result is null)
             {
