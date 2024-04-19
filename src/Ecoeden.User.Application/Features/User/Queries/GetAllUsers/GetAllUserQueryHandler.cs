@@ -19,6 +19,8 @@ namespace Ecoeden.User.Application.Features.User.Queries.GetAllUsers
         private readonly ICacheService _cacheService;
         private readonly UserManager<ApplicationUser> _userManager;
 
+        private const string CACHE_KEY = "userlist";
+
         public GetAllUserQueryHandler(ILogger logger,
             IMapper mapper,
             ICacheServiceFactory cacheServiceFactory,
@@ -33,16 +35,15 @@ namespace Ecoeden.User.Application.Features.User.Queries.GetAllUsers
         public async Task<Result<IReadOnlyList<UserResponse>>> Handle(GetAllUserQuery request, CancellationToken cancellationToken)
         {
             _logger.Here().MethodEnterd();
-            
-            string cacheKey = "userlist";
-            if (_cacheService.Contains(cacheKey)) // If a cahce hit
+
+            if (_cacheService.Contains(CACHE_KEY)) // If a cahce hit
             {
-                _logger.Here().Information("cache hit - {@key}", cacheKey);
-                return Result<IReadOnlyList<UserResponse>>.Success(_cacheService.Get<IReadOnlyList<UserResponse>>(cacheKey));
+                _logger.Here().Information("cache hit - {@key}", CACHE_KEY);
+                return Result<IReadOnlyList<UserResponse>>.Success(_cacheService.Get<IReadOnlyList<UserResponse>>(CACHE_KEY));
             }
 
             // ofcourse, we cant ignoe a terrible cache miss 
-            _logger.Here().Information("cache miss - {@key}", cacheKey);
+            _logger.Here().Information("cache miss - {@key}", CACHE_KEY);
             var result = await _userManager.Users.Include("UserRoles.Role.RolePermissions.Permission").ToListAsync();
             if (!result.Any())
             {
@@ -51,7 +52,7 @@ namespace Ecoeden.User.Application.Features.User.Queries.GetAllUsers
             } 
 
             var userResponse = _mapper.Map<IReadOnlyList<UserResponse>>(result);
-            _cacheService.Set(cacheKey, userResponse, null);
+            _cacheService.Set(CACHE_KEY, userResponse, null);
 
             _logger.Here().Information("user list fetch successfull");
             _logger.Here().MethodExited();

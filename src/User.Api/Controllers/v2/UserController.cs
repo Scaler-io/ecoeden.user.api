@@ -86,6 +86,15 @@ namespace User.Api.Controllers.v2
         [HttpPost("user")]
         [SwaggerHeader("CorrelationId", Description = "expects unique correlation id")]
         [SwaggerOperation(OperationId = "CreateUser", Description = "Creates new user record")]
+        // 200
+        [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+        [SwaggerResponseExample((int)HttpStatusCode.OK, typeof(CreateUserResponseExample))]
+        // 404
+        [ProducesResponseType(typeof(ApiResponse), (int)HttpStatusCode.NotFound)]
+        [SwaggerResponseExample((int)HttpStatusCode.NotFound, typeof(NotFoundResponseExample))]
+        // 500
+        [ProducesResponseType(typeof(ApiExceptionResponse), (int)HttpStatusCode.InternalServerError)]
+        [SwaggerResponseExample((int)HttpStatusCode.InternalServerError, typeof(InternalServerResponseExample))]
         [RequirePermission(ApiAccess.UserWrite)]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request)
         {
@@ -93,14 +102,13 @@ namespace User.Api.Controllers.v2
             var validationResult = _createSchemaValidator.Validate(request);
             if (!validationResult.IsValid)
             {
-                return ProcessValidationResult(validationResult);
+                return ProcessValidationResult (validationResult);
             }
 
-            var command = new AddUserCommand(request);
+            var command = new AddUserCommand(request, RequestInformation);
             var result = await _mediator.Send(command);
             Logger.Here().MethodExited();
             return OkOrFailure(result);
         }
-
     }
 }

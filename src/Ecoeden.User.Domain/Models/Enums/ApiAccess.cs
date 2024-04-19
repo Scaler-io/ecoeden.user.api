@@ -4,10 +4,10 @@
     {
         SettingsWrite,
         ReportRead,
-        UserManagementRead,
+        UsermanagementRead,
         RoleRead,
         RoleWrite,
-        UserManagementWrite,
+        UsermanagementWrite,
         InventoryRead,
         UserWrite,
         ReportWrite,

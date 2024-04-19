@@ -1,4 +1,5 @@
 ﻿using Ecoeden.User.Application.Contracts.Cache;
+using Ecoeden.User.Application.Contracts.Data;
 using Ecoeden.User.Application.Contracts.Factory;
 using Ecoeden.User.Application.Contracts.HealthStatus;
 using Ecoeden.User.Domain.Entities;
@@ -22,6 +23,8 @@ namespace Ecoeden.User.Infrastructure.DI
             {
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
             });
+
+            services.AddScoped<IDbTranscation, DbTransaction>();
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<UserDbContext>()

@@ -1,8 +1,11 @@
 ﻿using Ecoeden.User.Application.Contracts.Security;
 using Ecoeden.User.Application.Extensions;
+using Ecoeden.User.Domain.Models.Constants;
+using Ecoeden.User.Domain.Models.Core;
 using Ecoeden.User.Domain.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Net;
 using User.Api.Services;
 
 namespace User.Api.Filters
@@ -38,14 +41,18 @@ namespace User.Api.Filters
         public void OnActionExecuting(ActionExecutingContext context)
         {
             _logger.Here().MethodEnterd();
-            List<string> requiredPermissions = new List<string>();
+            List<string> requiredPermissions = new();
             requiredPermissions.AddRange(_permissionMapper.GetPermissionsForRole(_requiredRole));
             var currentUser = _identityService.PrepareUser();
-            var commonPermissions = requiredPermissions.Intersect(currentUser.AuthorizationDto.Permissions);
+            var commonPermissions = requiredPermissions.Intersect(currentUser.AuthorizationDto.Permissions).ToList();
             if (!commonPermissions.Any())
             {
                 _logger.Here().Error("No matching permission found");
-                context.Result = new UnauthorizedResult();
+                context.Result = new UnauthorizedObjectResult(new ApiError
+                {
+                    Code = ErrorCodes.Unauthorized.ToString(),
+                    Message = ErrorMessages.Unauthorized
+                });
             }
             _logger.Here().MethodExited();
         }

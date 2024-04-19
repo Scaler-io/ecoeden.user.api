@@ -22,6 +22,7 @@ namespace Ecoeden.User.Domain.Models.Core
                 ErrorCodes.Unauthorized => ErrorMessages.Unauthorized,
                 ErrorCodes.OperationFailed => ErrorMessages.Operationfailed,
                 ErrorCodes.InternalServerError => ErrorMessages.InternalServerError,
+                ErrorCodes.NotAllowed => ErrorMessages.NotAllowed,
                 _ => string.Empty
             };
         }

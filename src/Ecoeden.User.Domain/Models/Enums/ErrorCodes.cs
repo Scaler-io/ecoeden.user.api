@@ -5,6 +5,7 @@
         BadRequest,
         InternalServerError,
         OperationFailed,
+        NotAllowed,
         NotFound,
         Unauthorized
     }
