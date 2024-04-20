@@ -1,7 +1,12 @@
 ﻿using Ecoeden.User.Application.Contracts.Data.Repositories;
+using Ecoeden.User.Application.Extensions;
 using Ecoeden.User.Domain.Entities;
+using Ecoeden.User.Domain.Models.Enums;
+using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using System.Security.Claims;
 
 namespace Ecoeden.User.Infrastructure.Persistence.Repositories
 {
@@ -66,6 +71,26 @@ namespace Ecoeden.User.Infrastructure.Persistence.Repositories
         public async Task<bool> UpdateUser(ApplicationUser user)
         {
             return (await _userManager.UpdateAsync(user)).Succeeded;
+        }
+
+        public async Task<bool> AddToClimsAsync(string userName)
+        {
+            var user = await _userManager.Users
+                .Include("UserRoles.Role.RolePermissions.Permission")
+                .FirstOrDefaultAsync(x => x.UserName == userName);
+
+            var roles = user.GetUserRoleMappings();
+            var permissions = user.GetUserPermissionMappings();
+
+            return (await _userManager.AddClaimsAsync(user, new Claim[]
+            {
+                new Claim(JwtClaimTypes.Name, user.UserName),
+                new Claim(JwtClaimTypes.GivenName, user.FirstName),
+                new Claim(JwtClaimTypes.FamilyName, user.Lastname),
+                new Claim(JwtClaimTypes.Email, user.Email),
+                new Claim(JwtClaimTypes.Role, JsonConvert.SerializeObject(roles)),
+                new Claim("Permissions", JsonConvert.SerializeObject(permissions))
+            })).Succeeded;
         }
     }
 }

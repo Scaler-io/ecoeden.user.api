@@ -66,6 +66,8 @@ namespace Ecoeden.User.Application.Features.User.Commands.AddUser
                 return Result<bool>.Failure(ErrorCodes.OperationFailed);
             }
 
+            await _userRepository.AddToClimsAsync(request.CreateUser.UserName);
+
             _cacheService.Remove(CACHE_KEY); // invalidate user list cache
 
             _logger.Here().Information("user {@username} created", request.CreateUser.UserName);
