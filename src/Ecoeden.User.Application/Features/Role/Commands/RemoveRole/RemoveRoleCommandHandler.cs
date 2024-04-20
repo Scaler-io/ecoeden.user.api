@@ -31,7 +31,7 @@ namespace Ecoeden.User.Application.Features.Role.Commands.RemoveRole
 
             var user = await _userRepository.GetUserById(request.Command.UserId);
 
-            if(!request.CurrentUser.IsAdmin() && user.CreatedBy != request.CurrentUser.Id)
+            if(!request.CurrentUser.IsAdmin() || user.CreatedBy != request.CurrentUser.Id)
             {
                 _logger.Here().Error("{ErroCode} - user is not authorized");
                 return Result<bool>.Failure(ErrorCodes.Unauthorized);
@@ -41,6 +41,12 @@ namespace Ecoeden.User.Application.Features.Role.Commands.RemoveRole
             {
                 _logger.Here().Error("{ErrorCode} - no user entity found with {id}", ErrorCodes.NotFound, request.Command.UserId);
                 return Result<bool>.Failure(ErrorCodes.NotFound);
+            }
+
+            if (user.IsDefaultAdmin)
+            {
+                _logger.Here().Error("{ErrorCode} - no action can be performed on deafult admin", ErrorCodes.NotAllowed, request.Command.UserId);
+                return Result<bool>.Failure(ErrorCodes.NotAllowed);
             }
 
             if(user.GetUserRolesCount() == 1)
@@ -65,7 +71,7 @@ namespace Ecoeden.User.Application.Features.Role.Commands.RemoveRole
             }
 
             user.SetUpdatedBy(request.CurrentUser.Id);
-            user.setUpdationTime();
+            user.SetUpdationTime();
 
             await _userRepository.UpdateUser(user);
 

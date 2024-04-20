@@ -11,6 +11,8 @@ namespace Ecoeden.User.Domain.Models.Responses.Users
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
+        public bool IsDefaultAdmin { get; set; }
+        public bool IsActive { get; set; }
         public string NormalizedEmail { get; set; }
         public bool EmailConfirmed { get; set; }       
         public string PhoneNumber { get; set; }      

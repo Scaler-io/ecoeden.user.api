@@ -78,7 +78,7 @@ namespace User.Api.DependecyInjections
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateAudience = true,
-                    ValidateIssuer = true,
+                    ValidateIssuer = false,
                     ClockSkew = TimeSpan.Zero
                 };
             });

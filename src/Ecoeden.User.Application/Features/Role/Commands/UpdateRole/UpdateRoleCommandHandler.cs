@@ -38,6 +38,12 @@ namespace Ecoeden.User.Application.Features.Role.Commands.UpdateRole
                 return Result<bool>.Failure(ErrorCodes.NotFound, "User not found");
             }
 
+            if (user.IsDefaultAdmin)
+            {
+                _logger.Here().Error("{ErrorCode} - no action can be performed on deafult admin", ErrorCodes.NotAllowed, request.Command.UserId);
+                return Result<bool>.Failure(ErrorCodes.NotAllowed);
+            }
+
             foreach (var role in roles)
             {
                 if(await _userRepository.IsInRole(user, role))
@@ -49,7 +55,7 @@ namespace Ecoeden.User.Application.Features.Role.Commands.UpdateRole
             }
 
             user.SetUpdatedBy(request.CurrentUser.Id);
-            user.setUpdationTime();
+            user.SetUpdationTime();
 
             await _userRepository.UpdateUser(user);
 

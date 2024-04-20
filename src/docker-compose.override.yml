@@ -2,7 +2,26 @@ version: '3.4'
 
 services:
   user.api:
+    container_name: Ecoden.User.Api
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=docker
+      - Logging__IncludeScopes=false
+      - "Logging__LogOutputTemplate=[{Timestamp:dd-MM-yyyy HH:mm:ss, fff}] {Level} {Properties} [CorrelationId:{CorrelationId}] [Machine: {MachineName}] {CallerType}:{MemberName} {Message}{NewLine}{Exception}{NewLine}"
+      - Logging__Console__Enabled=true
+      - Logging__Console__LogLevel=Debug
+      - Logging__Elastic__Enabled=true
+      - Logging__Elastic__LogLevel=Debug
+      - AppConfigurations__ApplicationIdentifier=Ecoeden.User.Api
+      - AppConfigurations__ApplicationEnvironment=docker
+      - AppConfigurations__HealthCheckTimeOutInSeconds=2
+      - AppConfigurations__CacheExpiration=60
+      - ApiDescription=User manager api description
+      - ApiOriginHost=localhost:5001
+      - IdentityGroupAccess__Authority=http://Ecoeden.IdentityServer 
+      - IdentityGroupAccess__Audience=ecoeden.user.api
+      - Elasticsearch__Uri=http://elasticsearch:9200
+      - ConnectionStrings__DefaultConnection=Server=identityDb;Database=IdentityDb;User Id=ecoeden_usersvc;Password=admin1234;
     ports:
-      - "80"
+      - "5001:80"
+    networks:
+      - ecoeden_dev_net

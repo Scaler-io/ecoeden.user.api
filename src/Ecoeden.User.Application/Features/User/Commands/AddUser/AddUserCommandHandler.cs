@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
-using Ecoeden.User.Application.Contracts.Data;
+using Ecoeden.User.Application.Contracts.Cache;
 using Ecoeden.User.Application.Contracts.Data.Repositories;
+using Ecoeden.User.Application.Contracts.Factory;
 using Ecoeden.User.Application.Extensions;
 using Ecoeden.User.Domain.Entities;
 using Ecoeden.User.Domain.Models.Core;
@@ -15,14 +16,19 @@ namespace Ecoeden.User.Application.Features.User.Commands.AddUser
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
+        private readonly ICacheService _cacheService;
+
+        private const string CACHE_KEY = "userlist";
 
         public AddUserCommandHandler(ILogger logger,
             IMapper mapper,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            ICacheServiceFactory cacheServiceFactory)
         {
             _logger = logger;
             _mapper = mapper;
             _userRepository = userRepository;
+            _cacheService = cacheServiceFactory.GetService(CahceServiceTypes.InMemory);
         }
 
         public async Task<Result<bool>> Handle(AddUserCommand request, CancellationToken cancellationToken)
@@ -59,6 +65,8 @@ namespace Ecoeden.User.Application.Features.User.Commands.AddUser
                 _logger.Here().Error("Failed to assign roles to {@username}", request.CreateUser.UserName);
                 return Result<bool>.Failure(ErrorCodes.OperationFailed);
             }
+
+            _cacheService.Remove(CACHE_KEY); // invalidate user list cache
 
             _logger.Here().Information("user {@username} created", request.CreateUser.UserName);
             _logger.Here().MethodExited();

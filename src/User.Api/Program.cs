@@ -4,6 +4,7 @@ using Serilog;
 using User.Api;
 using User.Api.DependecyInjections;
 using Ecoeden.User.Application.DI;
+using Microsoft.IdentityModel.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,8 @@ var swaggerConfiguration = new SwaggerConfiguration(apiName, apiDescription, api
 
 var logger = Logging.GetLogger(builder.Configuration, builder.Environment);
 builder.Host.UseSerilog(logger);
+
+IdentityModelEventSource.ShowPII = true;
 
 builder.Services
     .ConfigureServices(builder.Configuration, swaggerConfiguration)

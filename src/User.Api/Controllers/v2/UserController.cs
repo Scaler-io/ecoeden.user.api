@@ -4,6 +4,7 @@ using Ecoeden.Swagger.Examples;
 using Ecoeden.Swagger.Examples.User;
 using Ecoeden.User.Application.Extensions;
 using Ecoeden.User.Application.Features.User.Commands.AddUser;
+using Ecoeden.User.Application.Features.User.Commands.EnableUser;
 using Ecoeden.User.Application.Features.User.Queries.GetAllUsers;
 using Ecoeden.User.Application.Features.User.Queries.GetUserById;
 using Ecoeden.User.Domain.Models.Core;
@@ -106,6 +107,28 @@ namespace User.Api.Controllers.v2
             }
 
             var command = new AddUserCommand(request, RequestInformation);
+            var result = await _mediator.Send(command);
+            Logger.Here().MethodExited();
+            return OkOrFailure(result);
+        }
+
+        [HttpPost("user/enable/{id}")]
+        [SwaggerHeader("CorrelationId", Description = "expects unique correlation id")]
+        [SwaggerOperation(OperationId = "UpdateVisibility", Description = "Toggles user visibility")]
+        // 200
+        [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+        [SwaggerResponseExample((int)HttpStatusCode.OK, typeof(bool))]
+        // 404
+        [ProducesResponseType(typeof(ApiResponse), (int)HttpStatusCode.NotFound)]
+        [SwaggerResponseExample((int)HttpStatusCode.NotFound, typeof(NotFoundResponseExample))]
+        // 500
+        [ProducesResponseType(typeof(ApiExceptionResponse), (int)HttpStatusCode.InternalServerError)]
+        [SwaggerResponseExample((int)HttpStatusCode.InternalServerError, typeof(InternalServerResponseExample))]
+        [RequirePermission(ApiAccess.UserWrite)]
+        public async Task<IActionResult> UpdateVisibility([FromRoute] string id)
+        {
+            Logger.Here().MethodEnterd();
+            var command = new EnableUserCommand(id, RequestInformation.CurrentUser);
             var result = await _mediator.Send(command);
             Logger.Here().MethodExited();
             return OkOrFailure(result);
