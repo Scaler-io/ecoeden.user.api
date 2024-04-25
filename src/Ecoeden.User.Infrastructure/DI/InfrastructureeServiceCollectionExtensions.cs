@@ -3,13 +3,17 @@ using Ecoeden.User.Application.Contracts.Data;
 using Ecoeden.User.Application.Contracts.Data.Repositories;
 using Ecoeden.User.Application.Contracts.Factory;
 using Ecoeden.User.Application.Contracts.HealthStatus;
+using Ecoeden.User.Application.EventBus;
 using Ecoeden.User.Domain.Entities;
 using Ecoeden.User.Infrastructure.Cache;
+using Ecoeden.User.Infrastructure.ConfigurationOptions.EventBus;
+using Ecoeden.User.Infrastructure.EventBus;
 using Ecoeden.User.Infrastructure.Factory;
 using Ecoeden.User.Infrastructure.HealthStatus;
 using Ecoeden.User.Infrastructure.HealthStatus.DbHealthStatus;
 using Ecoeden.User.Infrastructure.Persistence;
 using Ecoeden.User.Infrastructure.Persistence.Repositories;
+using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -42,6 +46,23 @@ namespace Ecoeden.User.Infrastructure.DI
             services.AddScoped<ICacheServiceFactory, CacheServiceFactory>();
             services.AddScoped<ICacheService, InMemoryCacheService>();
 
+            services.AddScoped(typeof(IPublishService<,>), typeof(PublishService<,>));
+
+            services.AddMassTransit(config =>
+            {
+                config.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("users", false));
+                config.UsingRabbitMq((context, cfg) =>
+                {
+                    var rabbitMq = configuration.GetSection("EventBus").Get<EventBusOptions>();
+                    cfg.Host(rabbitMq.Host, "/", host =>
+                    {
+                        host.Username(rabbitMq.Username);
+                        host.Password(rabbitMq.Password);
+                    });
+
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
             return services;
         }
     }

@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Contracts.Events;
 using Ecoeden.User.Application.Contracts.Cache;
 using Ecoeden.User.Application.Contracts.Data.Repositories;
 using Ecoeden.User.Application.Contracts.Factory;
+using Ecoeden.User.Application.EventBus;
 using Ecoeden.User.Application.Extensions;
 using Ecoeden.User.Domain.Entities;
 using Ecoeden.User.Domain.Models.Core;
@@ -17,22 +19,25 @@ namespace Ecoeden.User.Application.Features.User.Commands.AddUser
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
         private readonly ICacheService _cacheService;
+        private readonly IPublishService<ApplicationUser, UserInvitationSent> _publishService;
 
         private const string CACHE_KEY = "userlist";
 
         public AddUserCommandHandler(ILogger logger,
             IMapper mapper,
             IUserRepository userRepository,
-            ICacheServiceFactory cacheServiceFactory)
+            ICacheServiceFactory cacheServiceFactory,
+            IPublishService<ApplicationUser, UserInvitationSent> publishService)
         {
             _logger = logger;
             _mapper = mapper;
             _userRepository = userRepository;
             _cacheService = cacheServiceFactory.GetService(CahceServiceTypes.InMemory);
+            _publishService = publishService;
         }
 
         public async Task<Result<bool>> Handle(AddUserCommand request, CancellationToken cancellationToken)
-        {
+          {
             _logger.Here().MethodEnterd();
 
             if(await _userRepository.UserNameExistsAsync(request.CreateUser.UserName))
@@ -71,6 +76,10 @@ namespace Ecoeden.User.Application.Features.User.Commands.AddUser
             _cacheService.Remove(CACHE_KEY); // invalidate user list cache
 
             _logger.Here().Information("user {@username} created", request.CreateUser.UserName);
+
+            // publishes user invitation event
+            await _publishService.PublishAsync(createUserEntity, request.RequestInformation.CorrelationId);
+
             _logger.Here().MethodExited();
           
             return Result<bool>.Success(true);
