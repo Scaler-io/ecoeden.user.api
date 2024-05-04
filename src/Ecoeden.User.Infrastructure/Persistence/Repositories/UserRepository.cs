@@ -1,7 +1,6 @@
 ﻿using Ecoeden.User.Application.Contracts.Data.Repositories;
 using Ecoeden.User.Application.Extensions;
 using Ecoeden.User.Domain.Entities;
-using Ecoeden.User.Domain.Models.Enums;
 using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

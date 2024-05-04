@@ -21,6 +21,9 @@ services:
       - IdentityGroupAccess__Audience=ecoeden.user.api
       - Elasticsearch__Uri=http://elasticsearch:9200
       - ConnectionStrings__DefaultConnection=Server=identityDb;Database=IdentityDb;User Id=ecoeden_usersvc;Password=admin1234;
+      - EventBus__Host=rabbitmq
+      - EventBus__Username=guest
+      - EventBus__Password=guest
     ports:
       - "5001:80"
     networks:

@@ -133,5 +133,13 @@ namespace User.Api.Controllers.v2
             Logger.Here().MethodExited();
             return OkOrFailure(result);
         }
+
+        [HttpGet]
+        [SwaggerHeader("CorrelationId", Description = "expects unique correlation id")]
+        [SwaggerOperation(OperationId = "ConfirmEmail", Description = "Confirms email and enables account")]
+        public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
+        {
+            return Ok("");
+        }
     }
 }

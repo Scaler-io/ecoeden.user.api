@@ -29,8 +29,9 @@ var app = builder.Build()
 
 try
 {
-    app.Run();
-}finally
+   app.Run();
+}
+finally
 {
     Log.CloseAndFlush();
 }

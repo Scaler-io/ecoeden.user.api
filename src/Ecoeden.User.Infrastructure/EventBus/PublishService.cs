@@ -23,10 +23,14 @@ namespace Ecoeden.User.Infrastructure.EventBus
             _logger = logger;
         }
 
-        public async Task PublishAsync(T message, string correlationId)
+        public async Task PublishAsync(T message, string correlationId, object aditionalProperties = null)
         {
             var newEvent = _mapper.Map<TEvent>(message);
+            newEvent.CorrelationId = correlationId;
+            newEvent.AdditionalProperties = aditionalProperties;
+
             await _publishEndpoint.Publish(newEvent);
+
             _logger.Here() 
                 .WithCorrelationId(correlationId)
                 .Information("Successfully published {messageType} event message", typeof(TEvent).Name);

@@ -6,6 +6,6 @@ namespace Ecoeden.User.Application.EventBus
         where T : class
         where TEvent : NotificationEvent
     {
-        Task PublishAsync(T message, string correlationId);
+        Task PublishAsync(T message, string correlationId, object additionalProperties = null);
     }
 }

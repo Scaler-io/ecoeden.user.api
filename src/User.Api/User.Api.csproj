@@ -43,4 +43,10 @@
     </Using>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="keys\key-813a1ea0-82a2-4e9e-b7a7-ed638f50885a.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
