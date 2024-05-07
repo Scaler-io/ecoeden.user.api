@@ -1,6 +1,5 @@
-﻿namespace Ecoeden.User.Application.Behaviors
+﻿namespace Ecoeden.User.Application.Behaviors;
+
+public interface ISkipPiplineBehavior
 {
-    public interface ISkipPiplineBehavior
-    {
-    }
 }

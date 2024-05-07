@@ -14,6 +14,7 @@ namespace Ecoeden.User.Application.Contracts.Data.Repositories
         Task<bool> UserNameExistsAsync(string name);
         Task<bool> EmailExistsAsync(string email);
         Task<bool> UpdateUser(ApplicationUser user);
-        Task<bool> AddToClimsAsync(string userName);
+        Task<bool> AddToClaimsAsync(string userName);
+        Task<string> GetEmailConfirmationToken(ApplicationUser user);
     }
 }

@@ -1,7 +1,7 @@
-﻿namespace Ecoeden.User.Domain.Models.Enums
+﻿namespace Ecoeden.User.Domain.Models.Enums;
+
+public enum NotificationType
 {
-    public enum NotificationType
-    {
-        UserInvitation,
-    }
+    UserInvitation,
+    UserGenericPasswordSent
 }
