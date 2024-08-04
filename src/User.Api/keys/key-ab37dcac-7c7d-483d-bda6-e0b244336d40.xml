@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<key id="813a1ea0-82a2-4e9e-b7a7-ed638f50885a" version="1">
-  <creationDate>2024-05-04T18:59:53.4404303Z</creationDate>
-  <activationDate>2024-05-04T18:59:53.3994784Z</activationDate>
-  <expirationDate>2024-08-02T18:59:53.3994784Z</expirationDate>
+<key id="ab37dcac-7c7d-483d-bda6-e0b244336d40" version="1">
+  <creationDate>2024-08-04T19:41:38.5936468Z</creationDate>
+  <activationDate>2024-08-04T19:41:38.5747956Z</activationDate>
+  <expirationDate>2024-11-02T19:41:38.5747956Z</expirationDate>
   <descriptor deserializerType="Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel.AuthenticatedEncryptorDescriptorDeserializer, Microsoft.AspNetCore.DataProtection, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
     <descriptor>
       <encryption algorithm="AES_256_CBC" />
       <validation algorithm="HMACSHA256" />
       <masterKey p4:requiresEncryption="true" xmlns:p4="http://schemas.asp.net/2015/03/dataProtection">
         <!-- Warning: the key below is in an unencrypted form. -->
-        <value>9Rr6F9Dt8jwlVWFg8kyd0naZ1enETk9rE03vtmBSPPeYYvMv+4wUgD3WiXbW9q9Snbc5UZwGSBmtbVL01LysHw==</value>
+        <value>I0rgHPYVPwn/W6MS1C6JF549L32mfDBxaUUMzZ6x8g5L5Rnb0q97TefAa/xdj8aw3xAvmX21HxxbqIk/hUEITg==</value>
       </masterKey>
     </descriptor>
   </descriptor>
