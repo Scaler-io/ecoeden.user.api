@@ -4,7 +4,7 @@ services:
   user.api:
     container_name: Ecoeden.User.Api
     environment:
-      - ASPNETCORE_ENVIRONMENT=docker
+      - ASPNETCORE_ENVIRONMENT=Docker
       - Logging__IncludeScopes=false
       - "Logging__LogOutputTemplate=[{Timestamp:dd-MM-yyyy HH:mm:ss, fff}] {Level} {Properties} [CorrelationId:{CorrelationId}] [Machine: {MachineName}] {CallerType}:{MemberName} {Message}{NewLine}{Exception}{NewLine}"
       - Logging__Console__Enabled=true
@@ -12,7 +12,7 @@ services:
       - Logging__Elastic__Enabled=true
       - Logging__Elastic__LogLevel=Debug
       - AppConfigurations__ApplicationIdentifier=Ecoeden.User.Api
-      - AppConfigurations__ApplicationEnvironment=docker
+      - AppConfigurations__ApplicationEnvironment=Docker
       - AppConfigurations__HealthCheckTimeOutInSeconds=2
       - AppConfigurations__CacheExpiration=60
       - ApiDescription=User manager api description
