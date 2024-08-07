@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   user.api:
-    container_name: Ecoden.User.Api
+    container_name: Ecoeden.User.Api
     environment:
       - ASPNETCORE_ENVIRONMENT=docker
       - Logging__IncludeScopes=false
