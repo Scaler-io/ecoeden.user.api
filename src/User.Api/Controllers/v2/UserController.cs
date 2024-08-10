@@ -52,7 +52,6 @@ public class UserController : ApiBaseController
     // 500
     [ProducesResponseType(typeof(ApiExceptionResponse), (int)HttpStatusCode.InternalServerError)]
     [SwaggerResponseExample((int)HttpStatusCode.InternalServerError, typeof(InternalServerResponseExample))]
-    [RequirePermission(ApiAccess.UserRead)]
     public async Task<IActionResult> GetAllUsers()
     {
         Logger.Here().MethodEnterd();

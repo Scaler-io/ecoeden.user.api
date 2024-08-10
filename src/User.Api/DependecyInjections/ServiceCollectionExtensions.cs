@@ -88,6 +88,8 @@ public static class ServiceCollectionExtensions
         services.AddAuthorization(options =>
         {
             options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+                .RequireClaim("scope", "userapi:read")
+                .RequireClaim("scope", "userapi:write")
                 .RequireAuthenticatedUser()
                 .Build();
         });
