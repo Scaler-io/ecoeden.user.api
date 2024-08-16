@@ -6,61 +6,60 @@ using Ecoeden.User.Domain.Models.Core;
 using Ecoeden.User.Domain.Models.Enums;
 using MediatR;
 
-namespace Ecoeden.User.Application.Features.User.Commands.EnableUser
+namespace Ecoeden.User.Application.Features.User.Commands.EnableUser;
+
+public sealed class EnableUserCommandHandler : IRequestHandler<EnableUserCommand, Result<bool>>
 {
-    public sealed class EnableUserCommandHandler : IRequestHandler<EnableUserCommand, Result<bool>>
+    private readonly ILogger _logger;
+    private readonly IUserRepository _userRepository;
+    private readonly ICacheService _cacheService;
+
+    private const string CACHE_KEY = "userlist";
+
+    public EnableUserCommandHandler(ILogger logger,
+        IUserRepository userRepository,
+        ICacheServiceFactory cacheServiceFactory)
     {
-        private readonly ILogger _logger;
-        private readonly IUserRepository _userRepository;
-        private readonly ICacheService _cacheService;
+        _logger = logger;
+        _userRepository = userRepository;
+        _cacheService = cacheServiceFactory.GetService(CahceServiceTypes.InMemory);
+    }
 
-        private const string CACHE_KEY = "userlist";
+    public async Task<Result<bool>> Handle(EnableUserCommand request, CancellationToken cancellationToken)
+    {
+        _logger.Here().MethodEnterd();
 
-        public EnableUserCommandHandler(ILogger logger,
-            IUserRepository userRepository,
-            ICacheServiceFactory cacheServiceFactory)
+        var userEntity = await _userRepository.GetUserById(request.UserId);
+        if (userEntity is null)
         {
-            _logger = logger;
-            _userRepository = userRepository;
-            _cacheService = cacheServiceFactory.GetService(CahceServiceTypes.InMemory);
+            _logger.Here().Error("{ErrodCode} - No user was found with id", ErrorCodes.NotFound);
+            return Result<bool>.Failure(ErrorCodes.NotFound);
         }
 
-        public async Task<Result<bool>> Handle(EnableUserCommand request, CancellationToken cancellationToken)
+        if (userEntity.IsDefaultAdmin)
         {
-            _logger.Here().MethodEnterd();
-
-            var userEntity = await _userRepository.GetUserById(request.UserId);
-            if(userEntity is null)
-            {
-                _logger.Here().Error("{ErrodCode} - No user was found with id", ErrorCodes.NotFound);
-                return Result<bool>.Failure(ErrorCodes.NotFound);
-            }
-
-            if (userEntity.IsDefaultAdmin)
-            {
-                _logger.Here().Error("{ErrodCode} - No operation can be performed on default admin", ErrorCodes.Unauthorized);
-                return Result<bool>.Failure(ErrorCodes.Unauthorized);
-            }
-
-            if(!request.CurrentUser.IsAdmin() && userEntity.CreatedBy != request.CurrentUser.Id)
-            {
-                _logger.Here().Error("{ErrodCode} - operation not allowed on this user", ErrorCodes.NotAllowed);
-                return Result<bool>.Failure(ErrorCodes.NotAllowed);
-            }
-
-            userEntity.ToggleVisibility();
-            userEntity.SetUpdatedBy(request.CurrentUser.Id);
-            userEntity.SetUpdationTime();
-
-            await _userRepository.UpdateUser(userEntity);
-
-            _cacheService.Remove(CACHE_KEY);
-            _cacheService.Remove($"user-{userEntity.Id}");
-
-            _logger.Here().Information("User updated successfully");
-            _logger.Here().MethodExited();
-
-            return Result<bool>.Success(true);
+            _logger.Here().Error("{ErrodCode} - No operation can be performed on default admin", ErrorCodes.Unauthorized);
+            return Result<bool>.Failure(ErrorCodes.Unauthorized);
         }
+
+        if (!request.CurrentUser.IsAdmin() && userEntity.CreatedBy != request.CurrentUser.Id)
+        {
+            _logger.Here().Error("{ErrodCode} - operation not allowed on this user", ErrorCodes.NotAllowed);
+            return Result<bool>.Failure(ErrorCodes.NotAllowed);
+        }
+
+        userEntity.ToggleVisibility();
+        userEntity.SetUpdatedBy(request.CurrentUser.Id);
+        userEntity.SetUpdationTime();
+
+        await _userRepository.UpdateUser(userEntity);
+
+        _cacheService.Remove(CACHE_KEY);
+        _cacheService.Remove($"user-{userEntity.Id}");
+
+        _logger.Here().Information("User updated successfully");
+        _logger.Here().MethodExited();
+
+        return Result<bool>.Success(true);
     }
 }

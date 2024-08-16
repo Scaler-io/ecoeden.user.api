@@ -1,6 +1,7 @@
 ﻿using Ecoeden.User.Application.Contracts.Cache;
 using Ecoeden.User.Application.Contracts.Data;
 using Ecoeden.User.Application.Contracts.Data.Repositories;
+using Ecoeden.User.Application.Contracts.EventBus;
 using Ecoeden.User.Application.Contracts.Factory;
 using Ecoeden.User.Application.Contracts.HealthStatus;
 using Ecoeden.User.Application.EventBus;
@@ -59,6 +60,7 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddScoped<ICacheService, InMemoryCacheService>();
 
         services.AddScoped(typeof(IPublishService<,>), typeof(PublishService<,>));
+        services.AddScoped<IPublishServiceFactory, PublishServiceFactory>();
 
         services.AddMassTransit(config =>
         {

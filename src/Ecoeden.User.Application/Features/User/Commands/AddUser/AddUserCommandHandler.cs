@@ -11,6 +11,7 @@ using Ecoeden.User.Domain.Models.Enums;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using MediatR;
+using Ecoeden.User.Application.Contracts.EventBus;
 
 namespace Ecoeden.User.Application.Features.User.Commands.AddUser;
 
@@ -20,8 +21,7 @@ public sealed class AddUserCommandHandler : IRequestHandler<AddUserCommand, Resu
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
     private readonly ICacheService _cacheService;
-    private readonly IPublishService<ApplicationUser, UserInvitationSent> _userInvitePublishService;
-    private readonly IPublishService<ApplicationUser, UserGenericPasswordSent> _userPasswordPublishService;
+    private readonly IPublishServiceFactory _publishServiceFactory;
 
 
     private const string CACHE_KEY = "userlist";
@@ -30,22 +30,20 @@ public sealed class AddUserCommandHandler : IRequestHandler<AddUserCommand, Resu
         IMapper mapper,
         IUserRepository userRepository,
         ICacheServiceFactory cacheServiceFactory,
-        IPublishService<ApplicationUser, UserInvitationSent> userInvitePublishService,
-        IPublishService<ApplicationUser, UserGenericPasswordSent> userPasswordPublishService)
+        IPublishServiceFactory publishServiceFactory)
     {
         _logger = logger;
         _mapper = mapper;
         _userRepository = userRepository;
         _cacheService = cacheServiceFactory.GetService(CahceServiceTypes.InMemory);
-        _userInvitePublishService = userInvitePublishService;
-        _userPasswordPublishService = userPasswordPublishService;
+        _publishServiceFactory = publishServiceFactory;
     }
 
     public async Task<Result<bool>> Handle(AddUserCommand request, CancellationToken cancellationToken)
-      {
+    {
         _logger.Here().MethodEnterd();
 
-        if(await _userRepository.UserNameExistsAsync(request.CreateUser.UserName))
+        if (await _userRepository.UserNameExistsAsync(request.CreateUser.UserName))
         {
             _logger.Here().Error("Username {username} already used");
             return Result<bool>.Failure(ErrorCodes.BadRequest, "Username already used");
@@ -72,7 +70,7 @@ public sealed class AddUserCommandHandler : IRequestHandler<AddUserCommand, Resu
             return Result<bool>.Failure(ErrorCodes.OperationFailed);
         }
 
-        if(!await _userRepository.AddToClaimsAsync(request.CreateUser.UserName))
+        if (!await _userRepository.AddToClaimsAsync(request.CreateUser.UserName))
         {
             _logger.Here().Error("Failed to assign claims to {@username}", request.CreateUser.UserName);
             return Result<bool>.Failure(ErrorCodes.OperationFailed);
@@ -85,12 +83,14 @@ public sealed class AddUserCommandHandler : IRequestHandler<AddUserCommand, Resu
         var token = await _userRepository.GetEmailConfirmationToken(createUserEntity);
 
         // publishes user invitation event
-        await _userInvitePublishService.PublishAsync(createUserEntity,
-            request.RequestInformation.CorrelationId, 
-            new { Token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token))});
-        
+        var userInvitePublishService = _publishServiceFactory.CreatePublishService<ApplicationUser, UserInvitationSent>();
+        await userInvitePublishService.PublishAsync(createUserEntity,
+            request.RequestInformation.CorrelationId,
+            new { Token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token)) });
+
         // publishes user generic password sent
-        await _userPasswordPublishService.PublishAsync(createUserEntity, request.RequestInformation.CorrelationId);
+        var userPasswordPublishService = _publishServiceFactory.CreatePublishService<ApplicationUser, UserGenericPasswordSent>();
+        await userPasswordPublishService.PublishAsync(createUserEntity, request.RequestInformation.CorrelationId);
 
         _logger.Here().MethodExited();
         return Result<bool>.Success(true);
