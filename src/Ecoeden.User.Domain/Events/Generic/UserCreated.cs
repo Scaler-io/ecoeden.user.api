@@ -1,6 +1,7 @@
+using Ecoeden.User.Domain.Events;
 using Ecoeden.User.Domain.Models.Enums;
 
-namespace Ecoeden.User.Domain.Events.Generic;
+namespace Contracts.Events;
 
 public class UserCreated : GenericEvent
 {

@@ -7,6 +7,6 @@ public abstract class GenericEvent : IPublishable
     public DateTime CreatedOn { get; set; }
     public DateTime UpdatedOn { get; set; }
     public string CorrelationId { get; set; }
-    public Dictionary<string, string> AdditionalProperties { get; set; }
+    public object AdditionalProperties { get; set; }
     protected abstract GenericEventType GenericEventType { get; set; }
 }

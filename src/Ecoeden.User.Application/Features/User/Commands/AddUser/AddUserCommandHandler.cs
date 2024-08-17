@@ -92,6 +92,9 @@ public sealed class AddUserCommandHandler : IRequestHandler<AddUserCommand, Resu
         var userPasswordPublishService = _publishServiceFactory.CreatePublishService<ApplicationUser, UserGenericPasswordSent>();
         await userPasswordPublishService.PublishAsync(createUserEntity, request.RequestInformation.CorrelationId);
 
+        var userCreatedEventService = _publishServiceFactory.CreatePublishService<ApplicationUser, UserCreated>();
+        await userCreatedEventService.PublishAsync(createUserEntity, request.RequestInformation.CorrelationId);
+
         _logger.Here().MethodExited();
         return Result<bool>.Success(true);
     }

@@ -8,14 +8,14 @@ namespace Ecoeden.User.Infrastructure.EventBus;
 
 public class PublishService<T, TEvent> : IPublishService<T, TEvent>
     where T : class
-    where TEvent : NotificationEvent
+    where TEvent : IPublishable
 {
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly IMapper _mapper;
     private readonly ILogger _logger;
 
-    public PublishService(IPublishEndpoint publishEndpoint, 
-        IMapper mapper, 
+    public PublishService(IPublishEndpoint publishEndpoint,
+        IMapper mapper,
         ILogger logger)
     {
         _publishEndpoint = publishEndpoint;
@@ -31,7 +31,7 @@ public class PublishService<T, TEvent> : IPublishService<T, TEvent>
 
         await _publishEndpoint.Publish(newEvent);
 
-        _logger.Here() 
+        _logger.Here()
             .WithCorrelationId(correlationId)
             .Information("Successfully published {messageType} event message", typeof(TEvent).Name);
     }
