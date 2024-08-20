@@ -1,4 +1,4 @@
-﻿namespace Ecoeden.User.Infrastructure.ConfigurationOptions.EventBus;
+﻿namespace Ecoeden.User.Domain.ConfigurationOptions.EventBus;
 
 public sealed class EventBusOptions
 {

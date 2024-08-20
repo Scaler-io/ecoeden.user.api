@@ -4,7 +4,7 @@ using Serilog;
 using User.Api.ConfigurationOptions.Elastic;
 using User.Api.ConfigurationOptions.Logging;
 using Destructurama;
-using User.Infrastructure.ConfigurationOptions.App;
+using User.Domain.ConfigurationOptions.App;
 
 namespace User.Api
 {

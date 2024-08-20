@@ -61,7 +61,7 @@ public class RoleController : ApiBaseController
             return ProcessValidationResult(validationResult);
         }
 
-        UpdateRoleCommand command = new(request, RequestInformation.CurrentUser);
+        UpdateRoleCommand command = new(request, RequestInformation.CurrentUser, RequestInformation.CorrelationId);
         var result = await _mediator.Send(command);
         Logger.Here().MethodExited();
         return OkOrFailure(result);
@@ -91,7 +91,7 @@ public class RoleController : ApiBaseController
         {
             return ProcessValidationResult(validationResult);
         }
-        RemoveRoleCommand command = new(request, RequestInformation.CurrentUser);
+        RemoveRoleCommand command = new(request, RequestInformation.CurrentUser, RequestInformation.CorrelationId);
         var result = await _mediator.Send(command);
         Logger.Here().MethodExited();
         return OkOrFailure(result);

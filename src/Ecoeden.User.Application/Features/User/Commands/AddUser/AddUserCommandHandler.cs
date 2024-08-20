@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using MediatR;
 using Ecoeden.User.Application.Contracts.EventBus;
+using Microsoft.Extensions.Options;
+using User.Domain.ConfigurationOptions.App;
 
 namespace Ecoeden.User.Application.Features.User.Commands.AddUser;
 
@@ -22,21 +24,21 @@ public sealed class AddUserCommandHandler : IRequestHandler<AddUserCommand, Resu
     private readonly IUserRepository _userRepository;
     private readonly ICacheService _cacheService;
     private readonly IPublishServiceFactory _publishServiceFactory;
-
-
-    private const string CACHE_KEY = "userlist";
+    private readonly AppOption _appOption;
 
     public AddUserCommandHandler(ILogger logger,
         IMapper mapper,
         IUserRepository userRepository,
         ICacheServiceFactory cacheServiceFactory,
-        IPublishServiceFactory publishServiceFactory)
+        IPublishServiceFactory publishServiceFactory,
+        IOptions<AppOption> appOption)
     {
         _logger = logger;
         _mapper = mapper;
         _userRepository = userRepository;
         _cacheService = cacheServiceFactory.GetService(CahceServiceTypes.InMemory);
         _publishServiceFactory = publishServiceFactory;
+        _appOption = appOption.Value;
     }
 
     public async Task<Result<bool>> Handle(AddUserCommand request, CancellationToken cancellationToken)
@@ -76,7 +78,7 @@ public sealed class AddUserCommandHandler : IRequestHandler<AddUserCommand, Resu
             return Result<bool>.Failure(ErrorCodes.OperationFailed);
         }
 
-        _cacheService.Remove(CACHE_KEY); // invalidate user list cache
+        _cacheService.Remove(_appOption.UserListCacheKey); // invalidate user list cache
         _logger.Here().Information("user {@username} created", request.CreateUser.UserName);
 
         // generates email confirmation token

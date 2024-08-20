@@ -127,7 +127,7 @@ public class UserController : ApiBaseController
     public async Task<IActionResult> UpdateVisibility([FromRoute] string id)
     {
         Logger.Here().MethodEnterd();
-        var command = new EnableUserCommand(id, RequestInformation.CurrentUser);
+        var command = new EnableUserCommand(id, RequestInformation.CurrentUser, RequestInformation.CorrelationId);
         var result = await _mediator.Send(command);
         Logger.Here().MethodExited();
         return OkOrFailure(result);

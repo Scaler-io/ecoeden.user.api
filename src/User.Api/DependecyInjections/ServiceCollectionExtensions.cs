@@ -4,7 +4,7 @@ using Ecoeden.Swagger;
 using Ecoeden.Swagger.Examples.HealthCheck;
 using Ecoeden.User.Domain.Models.Core;
 using Ecoeden.User.Domain.Models.Enums;
-using Ecoeden.User.Infrastructure.ConfigurationOptions.Identity;
+using Ecoeden.User.Domain.ConfigurationOptions.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -39,7 +39,7 @@ public class UserRepository : IUserRepository
 
     public async Task<bool> AddToRolesAsync(ApplicationUser user, IEnumerable<string> roles)
     {
-       return (await _userManager.AddToRolesAsync(user, roles)).Succeeded;
+        return (await _userManager.AddToRolesAsync(user, roles)).Succeeded;
     }
 
     public async Task RemoveFromRoleAsync(ApplicationUser user, string role)
@@ -94,6 +94,6 @@ public class UserRepository : IUserRepository
 
     public async Task<string> GetEmailConfirmationToken(ApplicationUser user)
     {
-        return await _userManager.GenerateEmailConfirmationTokenAsync(user) ;
+        return await _userManager.GenerateEmailConfirmationTokenAsync(user);
     }
 }

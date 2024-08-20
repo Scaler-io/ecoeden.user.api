@@ -24,5 +24,13 @@ public class UserEventMappingProfile : Profile
             .ForMember(s => s.UpdatedOn, o => o.MapFrom(d => d.UpdatedAt))
             .ForMember(s => s.UserRoles, o => o.MapFrom(d => d.GetUserRoleMappings()))
             .ForMember(s => s.Permissions, o => o.MapFrom(d => d.GetUserPermissionMappings()));
+
+        CreateMap<ApplicationUser, UserUpdated>()
+        .ForMember(s => s.FullName, o => o.MapFrom(d => $"{d.FirstName} {d.Lastname}"))
+        .ForMember(s => s.LastLogin, o => o.MapFrom(d => d.LastLogin))
+        .ForMember(s => s.CreatedOn, o => o.MapFrom(d => d.CreatedAt))
+        .ForMember(s => s.UpdatedOn, o => o.MapFrom(d => d.UpdatedAt))
+        .ForMember(s => s.UserRoles, o => o.MapFrom(d => d.GetUserRoleMappings()))
+        .ForMember(s => s.Permissions, o => o.MapFrom(d => d.GetUserPermissionMappings()));
     }
 }

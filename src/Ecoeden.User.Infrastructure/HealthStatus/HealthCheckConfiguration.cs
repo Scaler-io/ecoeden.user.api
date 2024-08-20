@@ -2,7 +2,7 @@
 using Ecoeden.User.Application.Contracts.HealthStatus;
 using Ecoeden.User.Application.Extensions;
 using Microsoft.Extensions.Options;
-using User.Infrastructure.ConfigurationOptions.App;
+using User.Domain.ConfigurationOptions.App;
 
 namespace Ecoeden.User.Infrastructure.HealthStatus
 {
@@ -36,7 +36,7 @@ namespace Ecoeden.User.Infrastructure.HealthStatus
                         {
                             return await health.CheckIsHealthyAsync();
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             //_logger.Here().Error("{Exception}:", $"Health check failure {ex}");
                             return HealthCheckResult.Unhealthy();

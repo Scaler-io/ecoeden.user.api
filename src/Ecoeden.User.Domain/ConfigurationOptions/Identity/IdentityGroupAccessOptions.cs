@@ -1,4 +1,4 @@
-﻿namespace Ecoeden.User.Infrastructure.ConfigurationOptions.Identity
+﻿namespace Ecoeden.User.Domain.ConfigurationOptions.Identity
 {
     public class IdentityGroupAccessOptions
     {

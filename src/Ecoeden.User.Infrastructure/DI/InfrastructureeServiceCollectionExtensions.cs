@@ -7,7 +7,7 @@ using Ecoeden.User.Application.Contracts.HealthStatus;
 using Ecoeden.User.Application.EventBus;
 using Ecoeden.User.Domain.Entities;
 using Ecoeden.User.Infrastructure.Cache;
-using Ecoeden.User.Infrastructure.ConfigurationOptions.EventBus;
+using Ecoeden.User.Domain.ConfigurationOptions.EventBus;
 using Ecoeden.User.Infrastructure.EventBus;
 using Ecoeden.User.Infrastructure.Factory;
 using Ecoeden.User.Infrastructure.HealthStatus;

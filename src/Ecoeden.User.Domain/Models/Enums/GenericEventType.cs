@@ -4,7 +4,5 @@ public enum GenericEventType
 {
     UserCreated,
     UserUpdated,
-    UserDeleted,
-    RoleUpdated,
-    RoleRemoved
+    UserDeleted
 }
