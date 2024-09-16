@@ -21,14 +21,23 @@ public class UserRepository : IUserRepository
     public async Task<IEnumerable<ApplicationUser>> GetAllUsers()
     {
         return await _userManager.Users
-            .Include("UserRoles.Role.RolePermissions.Permission")
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .ThenInclude(r => r.RolePermissions)
+            .ThenInclude(rp => rp.Permission)
+            .AsSplitQuery()
             .ToListAsync();
     }
 
     public async Task<ApplicationUser> GetUserById(string id)
     {
         return await _userManager.Users
-            .Include("UserRoles.Role.RolePermissions.Permission")
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .ThenInclude(r => r.RolePermissions)
+            .ThenInclude(rp => rp.Permission)
+            .AsSplitQuery()
+            //.Include("UserRoles.Role.RolePermissions.Permission")
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 

@@ -107,6 +107,13 @@ public static class ServiceCollectionExtensions
                 tracing.AddOtlpExporter();
             });
 
+        services.AddCors(options =>
+        {
+            options.AddPolicy("ecoedencors", policy =>
+            {
+                policy.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
+            });
+        });
         return services;
     }
 

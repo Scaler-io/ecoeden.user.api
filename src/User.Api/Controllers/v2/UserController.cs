@@ -5,6 +5,7 @@ using Ecoeden.Swagger.Examples.User;
 using Ecoeden.User.Application.Extensions;
 using Ecoeden.User.Application.Features.User.Commands.AddUser;
 using Ecoeden.User.Application.Features.User.Commands.EnableUser;
+using Ecoeden.User.Application.Features.User.Commands.UploadImage;
 using Ecoeden.User.Application.Features.User.Queries.GetAllUsers;
 using Ecoeden.User.Application.Features.User.Queries.GetUserById;
 using Ecoeden.User.Domain.Models.Core;
@@ -128,6 +129,18 @@ public class UserController : ApiBaseController
     {
         Logger.Here().MethodEnterd();
         var command = new EnableUserCommand(id, RequestInformation.CurrentUser, RequestInformation.CorrelationId);
+        var result = await _mediator.Send(command);
+        Logger.Here().MethodExited();
+        return OkOrFailure(result);
+    }
+
+    [HttpPost("image/upload/{id}")]
+    [SwaggerHeader("CorrelationId", Description = "expects unique correlation id")]
+    [SwaggerOperation(OperationId = "UploadUserImage", Description = "Uploads user image as aavatar")]
+    public async Task<IActionResult> UploadUserImage([FromForm] ImageUploadRequest request, [FromRoute] string id)
+    {
+        Logger.Here().MethodEnterd();
+        var command = new UploadImageCommand(request.File, id, RequestInformation.CorrelationId);
         var result = await _mediator.Send(command);
         Logger.Here().MethodExited();
         return OkOrFailure(result);
