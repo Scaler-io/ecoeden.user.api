@@ -2,16 +2,18 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Ecoeden.User.Infrastructure.Persistence.Configurations
+namespace Ecoeden.User.Infrastructure.Persistence.Configurations;
+
+public sealed class ApplicationUserEntityConfiguration : IEntityTypeConfiguration<ApplicationUser>
 {
-    public sealed class ApplicationUserEntityConfiguration : IEntityTypeConfiguration<ApplicationUser>
+    public void Configure(EntityTypeBuilder<ApplicationUser> builder)
     {
-        public void Configure(EntityTypeBuilder<ApplicationUser> builder)
-        {
-            builder.HasMany(r => r.UserRoles)
-               .WithOne(u => u.User)
-               .HasForeignKey(fk => fk.UserId)
-               .IsRequired();
-        }
+        builder.HasIndex(u => u.Email).IsUnique();
+        builder.HasIndex(u => u.UserName).IsUnique();
+
+        builder.HasMany(r => r.UserRoles)
+           .WithOne(u => u.User)
+           .HasForeignKey(fk => fk.UserId)
+           .IsRequired();
     }
 }

@@ -37,7 +37,6 @@ public class UserRepository : IUserRepository
             .ThenInclude(r => r.RolePermissions)
             .ThenInclude(rp => rp.Permission)
             .AsSplitQuery()
-            //.Include("UserRoles.Role.RolePermissions.Permission")
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 

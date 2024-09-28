@@ -1,12 +1,15 @@
-﻿using Swashbuckle.AspNetCore.Filters;
+﻿using Ecoeden.User.Domain.Models.Responses.Users;
+using Swashbuckle.AspNetCore.Filters;
 
-namespace Ecoeden.Swagger.Examples.User
+namespace Ecoeden.Swagger.Examples.User;
+
+public class CreateUserResponseExample : IExamplesProvider<CreateUserResponse>
 {
-    public class CreateUserResponseExample : IExamplesProvider<bool>
+    public CreateUserResponse GetExamples()
     {
-        public bool GetExamples()
+        return new CreateUserResponse
         {
-            return true;
-        }
+            Id = Guid.NewGuid().ToString(),
+        };
     }
 }

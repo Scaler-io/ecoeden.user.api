@@ -6,6 +6,12 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="ConfigurationOptions\**" />
+    <EmbeddedResource Remove="ConfigurationOptions\**" />
+    <None Remove="ConfigurationOptions\**" />
+  </ItemGroup>
+
 
 	<ItemGroup>
 		<PackageReference Include="App.Metrics.Health" Version="3.2.0" />
@@ -26,10 +32,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Ecoeden.User.Application\Ecoeden.User.Application.csproj" />
     <ProjectReference Include="..\Ecoeden.User.Domain\Ecoeden.User.Domain.csproj" />
-  </ItemGroup>
-		
-  <ItemGroup>
-    <Folder Include="ConfigurationOptions\Identity\" />
   </ItemGroup>
 		
   <ItemGroup>

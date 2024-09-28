@@ -6,6 +6,7 @@ using Ecoeden.User.Application.Extensions;
 using Ecoeden.User.Application.Features.User.Commands.AddUser;
 using Ecoeden.User.Application.Features.User.Commands.EnableUser;
 using Ecoeden.User.Application.Features.User.Commands.UploadImage;
+using Ecoeden.User.Application.Features.User.Queries.CheckUserNameOrEmailExists;
 using Ecoeden.User.Application.Features.User.Queries.GetAllUsers;
 using Ecoeden.User.Application.Features.User.Queries.GetUserById;
 using Ecoeden.User.Domain.Models.Core;
@@ -142,6 +143,27 @@ public class UserController : ApiBaseController
         Logger.Here().MethodEnterd();
         var command = new UploadImageCommand(request.File, id, RequestInformation.CorrelationId);
         var result = await _mediator.Send(command);
+        Logger.Here().MethodExited();
+        return OkOrFailure(result);
+    }
+
+    [HttpGet("exists/{data}")]
+    [SwaggerHeader("CorrelationId", Description = "expects unique correlation id")]
+    [SwaggerOperation(OperationId = "CheckUsernameOrEmail", Description = "Checks the username exists")]
+    // 200
+    [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+    [SwaggerResponseExample((int)HttpStatusCode.OK, typeof(bool))]
+    // 404
+    [ProducesResponseType(typeof(ApiResponse), (int)HttpStatusCode.NotFound)]
+    [SwaggerResponseExample((int)HttpStatusCode.NotFound, typeof(NotFoundResponseExample))]
+    // 500
+    [ProducesResponseType(typeof(ApiExceptionResponse), (int)HttpStatusCode.InternalServerError)]
+    [SwaggerResponseExample((int)HttpStatusCode.InternalServerError, typeof(InternalServerResponseExample))]
+    public async Task<IActionResult> CheckUsernameOrEmail([FromRoute] string data)
+    {
+        Logger.Here().MethodEnterd();
+        var query = new CheckUserNameOrEmailExistsQuery("username", data, RequestInformation.CorrelationId);
+        var result = await _mediator.Send(query);
         Logger.Here().MethodExited();
         return OkOrFailure(result);
     }

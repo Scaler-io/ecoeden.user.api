@@ -24,6 +24,10 @@ services:
       - EventBus__Host=rabbitmq
       - EventBus__Username=guest
       - EventBus__Password=guest
+      - Cloudinary__CloudName=dq7lcuprn
+      - Cloudinary__ApiKey=741484825353262
+      - Cloudinary__ApiSecret=4PrSiEqHGBuFFAjscR6g_N1NsrI
+      - Cloudinary__UploadBasePath=Ecoeden/users
     ports:
       - "5001:80"
     networks:
