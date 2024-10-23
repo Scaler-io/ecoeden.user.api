@@ -73,6 +73,6 @@ public sealed class EnableUserCommandHandler : IRequestHandler<EnableUserCommand
         _logger.Here().Information("User updated successfully");
         _logger.Here().MethodExited();
 
-        return Result<bool>.Success(true);
+        return Result<bool>.Success(userEntity.IsActive);
     }
 }

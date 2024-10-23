@@ -48,8 +48,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="keys\key-ab37dcac-7c7d-483d-bda6-e0b244336d40.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Update="keys\key-3cecc19b-fd20-41af-a8d6-520b656cf124.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
